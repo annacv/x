@@ -12,19 +12,23 @@ import { ResultRating } from './result-rating.model';
  */
 export interface Result extends NamedModel<'Result'>, Identifiable, Taggable {
   /** The type of the result: product, article, pack, etc... */
-  type: string;
+  type?: string;
   /** Images of the result. It should be the URLs. */
-  images: string[];
+  images?: string[];
   /** Result name. */
-  name: string;
+  name?: string;
   /** {@link ResultPrice | Result price}.  */
-  price: ResultPrice;
+  price?: ResultPrice;
   /** {@link ResultRating | Result rating}.  */
-  rating: ResultRating;
+  rating?: ResultRating;
   /** {@link ResultIdentifier | Result identifier}.  */
-  identifier: ResultIdentifier;
+  identifier?: ResultIdentifier;
   /** Result URL to redirect to PDP.  */
-  url: string;
+  url?: string;
   /** Flag if the results has been added to the wishlist or not. */
-  isWishlisted: boolean;
+  isWishlisted?: boolean;
+  /** Variants of the result. */
+  variants?: ResultVariant[];
 }
+
+export interface ResultVariant extends Partial<Omit<Result, 'id' | 'tagging' | 'modelName'>> {}

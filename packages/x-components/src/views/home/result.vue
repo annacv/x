@@ -21,6 +21,17 @@
       <BaseResultLink :result="result">
         <h1 class="x-title3" data-test="result-title">{{ result.name }}</h1>
       </BaseResultLink>
+      <p>Selected color: {{ result.color }}</p>
+      <p>Selected size: {{ result.size }}</p>
+      <p>Price: {{ result.price.value }}</p>
+      <p>Units: {{ result.units }}</p>
+      <ResultSelector :level="1" :result="result" v-slot="{ variant }">
+        {{ variant.size }}
+      </ResultSelector>
+      <ResultSelector :level="2" :result="result" v-slot="{ variant }">
+        {{ variant.units }}
+      </ResultSelector>
+      <ResultSelector :result="result" />
     </div>
   </article>
 </template>
@@ -32,9 +43,11 @@
   import BaseResultImage from '../../components/result/base-result-image.vue';
   import BaseResultLink from '../../components/result/base-result-link.vue';
   import BaseResultRating from '../../components/result/base-result-rating.vue';
+  import ResultSelector from './result-selector.vue';
 
   @Component({
     components: {
+      ResultSelector,
       BaseResultLink,
       BaseResultRating,
       BaseResultImage

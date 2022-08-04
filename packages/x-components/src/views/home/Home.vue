@@ -222,7 +222,12 @@
                       <BaseVariableColumnGrid :animation="resultsAnimation">
                         <template #result="{ item: result }">
                           <MainScrollItem :item="result">
-                            <Result :result="result" data-test="search-result" />
+                            <ResultProvider
+                              :result="getResultWithVariants(result)"
+                              v-slot="{ result }"
+                            >
+                              <Result :result="result" data-test="search-result" />
+                            </ResultProvider>
                           </MainScrollItem>
                         </template>
 
@@ -380,6 +385,7 @@
   import CloseMainModal from '../../components/modals/close-main-modal.vue';
   import BaseKeyboardNavigation from '../../components/base-keyboard-navigation.vue';
   import { XProvide } from '../../components/decorators/injection.decorators';
+  import ResultProvider from '../../x-modules/search/components/result-provider.vue';
   import Aside from './aside.vue';
   import PredictiveLayer from './predictive-layer.vue';
   import Result from './result.vue';
@@ -390,6 +396,7 @@
       infiniteScroll
     },
     components: {
+      ResultProvider,
       ArrowRight,
       Aside,
       AutoProgressBar,
@@ -480,6 +487,46 @@
         maxItemsToRender: 5
       }
     };
+
+    private getVariants = (): any => [
+      {
+        color: 'RED',
+        name: 'Red dress with ribbon',
+        variants: [
+          {
+            size: 'S',
+            price: { value: 1.99, originalValue: 31.99, hasDiscount: false }
+          },
+          {
+            size: 'M',
+            price: { value: 3.99, originalValue: 31.99, hasDiscount: false },
+            variants: [
+              {
+                units: '6',
+                price: { value: 3.99, originalValue: 31.99, hasDiscount: false }
+              },
+              {
+                units: '12',
+                price: { value: 6.99, originalValue: 31.99, hasDiscount: false }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        color: 'BLUE',
+        variants: [
+          {
+            size: 'S',
+            price: { value: 2.99, originalValue: 31.99, hasDiscount: false }
+          }
+        ]
+      }
+    ];
+
+    protected getResultWithVariants(result: any): any {
+      return { ...result, variants: this.getVariants() };
+    }
   }
 </script>
 

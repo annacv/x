@@ -1,6 +1,7 @@
 import {
   Facet,
   Result,
+  ResultVariant,
   Sort,
   Redirection,
   TaggingRequest,
@@ -98,4 +99,6 @@ export interface SearchXEvents {
    * The user has aborted a redirection.
    */
   UserClickedAbortARedirection: void;
+
+  UserSelectedAResultVariant: { result: Result; variant: ResultVariant };
 }

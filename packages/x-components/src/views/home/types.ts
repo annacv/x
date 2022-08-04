@@ -13,3 +13,10 @@ export interface HomeControls {
     maxItemsToRender: number;
   };
 }
+
+declare module '@empathyco/x-types' {
+  export interface Result {
+    color?: string;
+    size?: string;
+  }
+}
