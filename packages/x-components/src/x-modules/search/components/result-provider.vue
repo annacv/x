@@ -1,13 +1,13 @@
 <script lang="ts">
   import Vue, { CreateElement, VNode } from 'vue';
-  import { Component, Prop, Provide } from 'vue-property-decorator';
+  import { Component, Prop, Provide, Watch } from 'vue-property-decorator';
   import { Result, ResultVariant } from '@empathyco/x-types';
-  import { xComponentMixin, XOn } from '../../../components';
+  import { xComponentMixin } from '../../../components';
   import { searchXModule } from '../x-module';
 
-  const flatVariantsFields = (
+  const extractSelectedVariantsFields = (
     variants: ResultVariant[] = [],
-    selectedIndexes: number[] = [],
+    selectedIndexes: (number | undefined)[] = [],
     levels: number
   ): ResultVariant => {
     if (variants.length === 0) {
@@ -38,36 +38,36 @@
     protected levels = 3;
 
     @Provide('selectedIndexes')
-    protected selectedIndexes: number[] = [0, 0, 0]; // TODO: change initialization
+    protected selectedIndexes: (number | undefined)[] = [];
 
     @Provide('setResultVariant')
-    setResultVariant(level: number, selectedIndex: number): void {
+    setResultVariant(level: number, selectedIndex: number, variant: ResultVariant): void {
       Vue.set(this.selectedIndexes, level, selectedIndex);
 
-      // Reset next levels to default selection (0)
+      // Reset next levels to default selection (undefined)
       for (let i = level + 1; i < this.levels; i++) {
-        Vue.set(this.selectedIndexes, i, 0);
+        Vue.set(this.selectedIndexes, i, undefined);
       }
+
+      this.$x.emit('UserSelectedAResultVariant', { result: this.providedResult, variant, level });
     }
 
-    // TODO: If we can have variants with id's we don't need this
-    @XOn('SearchRequestUpdated')
+    @Watch('result')
     resetSelection(): void {
-      // Reset next levels to default selection (0)
+      // Reset all levels to default selection (undefined)
       for (let i = 0; i < this.levels; i++) {
-        Vue.set(this.selectedIndexes, i, 0);
+        Vue.set(this.selectedIndexes, i, undefined);
       }
     }
 
-    // TODO watch providedResult to emit global event
     protected get providedResult(): Result {
-      const { selected, ...fields } = flatVariantsFields(
+      const fields = extractSelectedVariantsFields(
         this.result.variants,
         this.selectedIndexes,
         this.levels
       );
 
-      return Object.assign({}, this.result, { ...fields }, { variants: this.result.variants });
+      return Object.assign({}, this.result, fields, { variants: this.result.variants });
     }
 
     render(h: CreateElement): VNode {

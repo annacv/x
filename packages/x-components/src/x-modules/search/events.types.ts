@@ -100,5 +100,5 @@ export interface SearchXEvents {
    */
   UserClickedAbortARedirection: void;
 
-  UserSelectedAResultVariant: { result: Result; variant: ResultVariant };
+  UserSelectedAResultVariant: { result: Result; variant: ResultVariant; level: number };
 }
