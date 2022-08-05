@@ -222,12 +222,10 @@
                       <BaseVariableColumnGrid :animation="resultsAnimation">
                         <template #result="{ item: result }">
                           <MainScrollItem :item="result">
-                            <ResultProvider
+                            <Result
                               :result="getResultWithVariants(result)"
-                              v-slot="{ result }"
-                            >
-                              <Result :result="result" data-test="search-result" />
-                            </ResultProvider>
+                              data-test="search-result"
+                            />
                           </MainScrollItem>
                         </template>
 

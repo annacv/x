@@ -1,79 +1,55 @@
 <script lang="ts">
   import Vue, { CreateElement, VNode } from 'vue';
-  import { Component, Prop, Provide } from 'vue-property-decorator';
+  import { Component, Prop, Watch } from 'vue-property-decorator';
   import { Result, ResultVariant } from '@empathyco/x-types';
-  import { xComponentMixin, XOn } from '../../../components';
+  import { xComponentMixin, XInject, XProvide } from '../../../components';
   import { searchXModule } from '../x-module';
-
-  const flatVariantsFields = (
-    variants: ResultVariant[] = [],
-    selectedIndexes: number[] = [],
-    levels: number
-  ): ResultVariant => {
-    if (variants.length === 0) {
-      return {};
-    }
-
-    let currentVariants: ResultVariant[] = variants;
-    const flattenedObject = {};
-
-    for (let i = 0; i < levels; i++) {
-      const currentIndex = selectedIndexes[i] ?? 0;
-      const currentVariant = currentVariants[currentIndex] ?? {};
-      currentVariants = currentVariant.variants ?? [];
-      Object.assign(flattenedObject, currentVariant);
-    }
-
-    return flattenedObject;
-  };
 
   @Component({
     mixins: [xComponentMixin(searchXModule)]
   })
   export default class ResultProvider extends Vue {
-    @Prop()
+    @Prop({ required: true })
     public result!: Result;
 
-    // TODO: calculate levels dynamically
-    protected levels = 3;
+    @Prop({ default: () => [] })
+    public variants!: ResultVariant[];
 
-    @Provide('selectedIndexes')
-    protected selectedIndexes: number[] = [0, 0, 0]; // TODO: change initialization
+    @Prop({ default: false })
+    public autoSelectFirstVariant!: boolean;
 
-    @Provide('setResultVariant')
-    setResultVariant(level: number, selectedIndex: number): void {
-      Vue.set(this.selectedIndexes, level, selectedIndex);
+    @XInject('parentVariant', null as any)
+    public parentVariant!: ResultVariant | null;
 
-      // Reset next levels to default selection (0)
-      for (let i = level + 1; i < this.levels; i++) {
-        Vue.set(this.selectedIndexes, i, 0);
+    @XProvide('parentVariant')
+    public selectedVariant: ResultVariant | null = null;
+
+    protected get resultAndVariant(): Result {
+      if (!this.selectedVariant) {
+        return this.result;
       }
+      const { variants, ...selectedVariant } = this.selectedVariant;
+      return { ...this.result, ...selectedVariant };
     }
 
-    // TODO: If we can have variants with id's we don't need this
-    @XOn('SearchRequestUpdated')
-    resetSelection(): void {
-      // Reset next levels to default selection (0)
-      for (let i = 0; i < this.levels; i++) {
-        Vue.set(this.selectedIndexes, i, 0);
-      }
+    selectVariant(variant: ResultVariant): void {
+      this.selectedVariant = variant;
     }
 
-    // TODO watch providedResult to emit global event
-    protected get providedResult(): Result {
-      const { selected, ...fields } = flatVariantsFields(
-        this.result.variants,
-        this.selectedIndexes,
-        this.levels
-      );
-
-      return Object.assign({}, this.result, { ...fields }, { variants: this.result.variants });
+    @Watch('parentVariant', { immediate: true })
+    resetSelectedVariant(): void {
+      this.selectedVariant =
+        this.autoSelectFirstVariant && this.variants.length >= 1 ? this.variants[0] : null;
     }
 
     render(h: CreateElement): VNode {
       return (
         this.$scopedSlots.default?.({
-          result: this.providedResult
+          result: this.resultAndVariant,
+          selectedVariant: this.selectedVariant,
+          childrenVariants: this.selectedVariant?.variants ?? [],
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          selectVariant: this.selectVariant
         })?.[0] ?? h()
       );
     }

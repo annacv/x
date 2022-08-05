@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button v-for="(variant, index) in getOptions" :key="index" @click="selectOption(index)">
+    <button v-for="(variant, index) in variants" :key="index" @click="$emit('click', variant)">
       <slot v-bind="{ variant }">{{ variant.color }}</slot>
     </button>
   </div>
@@ -8,41 +8,23 @@
 
 <script lang="ts">
   import Vue from 'vue';
-  import { Component, Prop, Inject } from 'vue-property-decorator';
-  import { Result, ResultVariant } from '@empathyco/x-types';
+  import { Component, Prop } from 'vue-property-decorator';
+  import { ResultVariant } from '@empathyco/x-types';
+  import { XInject } from '../../components';
 
   @Component
   export default class ResultSelector extends Vue {
     @Prop()
-    protected result!: Result;
+    public variants!: ResultVariant[];
 
-    @Prop({
-      default: 0
-    })
-    protected level!: number;
+    @Prop()
+    public selectedVariant!: ResultVariant | null;
 
-    @Inject('selectedIndexes')
-    protected selectedIndexes!: number[];
+    @XInject('selectedVariants')
+    public selectedVariants!: ResultVariant[];
 
-    @Inject('setResultVariant')
-    protected setResultVariant!: (level: number, selectedIndex: number) => void;
-
-    protected isSelected(variantIndex: number): boolean {
-      return this.selectedIndexes[this.level] === variantIndex;
-    }
-
-    protected selectOption(selectedIndex: number): void {
-      this.setResultVariant(this.level, selectedIndex);
-    }
-
-    protected get getOptions(): ResultVariant[] {
-      let currentVariants = this.result?.variants ?? [];
-
-      for (let i = 0; i < this.level; i++) {
-        currentVariants = currentVariants?.[this.selectedIndexes[i]].variants ?? [];
-      }
-
-      return currentVariants;
+    protected isSelected(variant: ResultVariant): boolean {
+      return variant === this.selectedVariant;
     }
   }
 </script>
