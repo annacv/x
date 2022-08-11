@@ -14,6 +14,8 @@ export default {
     4: '4px'
   },
   colors: {
+    transparent: 'transparent', // Needed for DS
+    lead: '#36515b', // Needed for DS
     neutral: {
       0: '#FFFFFF',
       10: '#E7E7E7',

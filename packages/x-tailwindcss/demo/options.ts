@@ -2,6 +2,7 @@ import {
   ComponentsDefinition,
   DynamicComponentsDefinition,
   DynamicUtilitiesDefinition,
+  ExtractVariantsDefinition,
   PluginOptions,
   UtilitiesDefinition
 } from '../src/types';
@@ -59,6 +60,13 @@ export const options: PluginOptions = {
   },
   dynamicComponents(): DynamicComponentsDefinition {
     return {};
+  },
+  extractVariants(): ExtractVariantsDefinition {
+    return {
+      ':root': {
+        '--x-color-base-neutral-70': '#b3b3b3'
+      }
+    };
   },
   theme: {
     colors: {

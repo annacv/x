@@ -4,6 +4,7 @@ import plugin from 'tailwindcss/plugin';
 import components from './helpers/components';
 import dynamicComponents from './helpers/dynamic-components';
 import dynamicUtilities from './helpers/dynamic-utilities';
+import extractVariants from './helpers/extract-variants';
 import theme from './helpers/theme';
 import utilities from './helpers/utilities';
 import { PluginOptions } from './types';
@@ -11,8 +12,10 @@ import { PluginOptions } from './types';
 export default plugin.withOptions(
   function (options?: PluginOptions) {
     return function (tailwindHelpers) {
-      const { addComponents, matchComponents, addUtilities, matchUtilities, theme } =
+      const { addBase, addComponents, matchComponents, addUtilities, matchUtilities, theme } =
         tailwindHelpers;
+
+      addBase(deepMerge({}, extractVariants({ theme }), options?.extractVariants?.({ theme })));
 
       forEach(
         deepMerge({}, dynamicComponents({ theme }), options?.dynamicComponents?.({ theme })),

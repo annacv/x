@@ -4,6 +4,7 @@ import { ReturnOfComponents } from './helpers/components';
 import { ReturnOfDynamicComponents } from './helpers/dynamic-components';
 import { ReturnOfDynamicUtilities } from './helpers/dynamic-utilities';
 import { ReturnOfUtilities } from './helpers/utilities';
+import { ReturnOfExtractVariants } from './helpers/extract-variants';
 
 /**
  * Represents a `CSS` variable name.
@@ -104,6 +105,15 @@ export type DynamicComponentsDefinition =
   | DynamicCSSStylesOptions;
 
 /**
+ * Represents the return type of {@link PluginOptions.extractVariants}.
+ *
+ * @public
+ */
+export type ExtractVariantsDefinition =
+  | DeepPartial<ReturnOfExtractVariants>
+  | DynamicCSSStylesOptions;
+
+/**
  * Represents the return type of {@link PluginOptions.dynamicUtilities}.
  *
  * @public
@@ -127,12 +137,16 @@ export interface PluginOptions {
    */
   dynamicComponents?: (helpers: Partial<TailwindHelpers>) => DynamicComponentsDefinition;
   /**
+   * Extract CSS variants from theme.
+   */
+  extractVariants?: (helpers: Partial<TailwindHelpers>) => ExtractVariantsDefinition;
+  /**
    * Registers new static utilities or modify the existing ones.
    */
   utilities?: (helpers: Partial<TailwindHelpers>) => UtilitiesDefinition;
   /**
    * Registers a new dynamic utilities styles or replaces the existing ones.
-   * */
+   */
   dynamicUtilities?: (helpers: Partial<TailwindHelpers>) => DynamicUtilitiesDefinition;
   /**
    * Helper to add extra functionalities.
