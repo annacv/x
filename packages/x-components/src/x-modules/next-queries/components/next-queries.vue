@@ -42,6 +42,7 @@
   import { Getter } from '../../../components/decorators/store.decorators';
   import { xComponentMixin } from '../../../components/x-component.mixin';
   import { nextQueriesXModule } from '../x-module';
+  import { SuggestionsMixin } from '../../../components/suggestions/suggestions.mixin';
   import NextQuery from './next-query.vue';
 
   /**
@@ -55,7 +56,7 @@
    */
   @Component({
     components: { NextQuery, BaseSuggestions },
-    mixins: [xComponentMixin(nextQueriesXModule)]
+    mixins: [xComponentMixin(nextQueriesXModule), SuggestionsMixin]
   })
   export default class NextQueries extends Vue {
     /**
