@@ -364,7 +364,7 @@ describe('testing NextQueriesList component', () => {
     });
 
     it('does not insert next queries groups if `showOnlyAfterOffset` is `true`', () => {
-      const nextQueries = createNextQueries('steak', 'tomahawk');
+      const nextQueries = createNextQueries('tortilla', 'tomahawk');
       const extraItems = createExtraItems(5);
       const { getItemsRenderedText } = renderNextQueriesList({
         nextQueries,
