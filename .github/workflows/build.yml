@@ -1,5 +1,5 @@
 name: Check branch is releasable and release alpha on main branch update
-on: [push, pull_request]
+on: [pull_request]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ ( matrix.task != 'test:unit' && 1 ) || 0 }} # 0 for test, 1 otherwise
           persist-credentials: false
       # Using lerna, it is recommended to cache the whole node_modules folder https://github.com/actions/cache/blob/main/examples.md#node---lerna
       # but this is not the standard, normally, only the node_modules/.cache should be cached. Also, as cypress image is used, node is already
@@ -47,8 +47,11 @@ jobs:
       - name: Build
         if: steps.cache-node-modules.outputs.cache-hit == 'true'
         run: npm run build
+      - name: Set test CLI args
+        if: ${{ matrix.task == 'test:unit' }}
+        run: echo "CLI_ARGS=--changedSince ${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
       - name: Run ${{ matrix.task }}
-        run: npm run ${{ matrix.task }}
+        run: npm run ${{ matrix.task }} ${{ env.CLI_ARGS }}
   release:
     needs: [build]
     runs-on: ubuntu-latest
