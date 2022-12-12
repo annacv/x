@@ -7,6 +7,7 @@ import { XInstaller } from './x-installer/x-installer/x-installer';
 import { FilterEntityFactory } from './x-modules/facets/entities/filter-entity.factory';
 import { SingleSelectModifier } from './x-modules/facets/entities/single-select.modifier';
 import './tailwind/index.css';
+import { XBusPriorityQueue } from './plugins/x-bus-priority-queue';
 
 Vue.config.productionTip = false;
 FilterEntityFactory.instance.registerModifierByFacetId('age_facet', SingleSelectModifier);
@@ -22,7 +23,8 @@ const installer = new XInstaller({
     router
   },
   domElement: '#app',
-  onCreateApp: initDevtools
+  onCreateApp: initDevtools,
+  bus: new XBusPriorityQueue()
 });
 
 if (window.initX) {
