@@ -3,6 +3,7 @@
     v-bind="$attrs"
     :suggestions="renderedNextQueries"
     data-test="next-queries"
+    data-env="test"
     class="x-next-queries"
   >
     <template #default="baseScope">
