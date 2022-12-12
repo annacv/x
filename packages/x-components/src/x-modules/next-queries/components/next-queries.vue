@@ -2,7 +2,7 @@
   <BaseSuggestions
     v-bind="$attrs"
     :suggestions="renderedNextQueries"
-    data-test="next-queries"
+    data-test="next-queri"
     data-env="test"
     class="x-next-queries"
   >
@@ -65,7 +65,7 @@
      *
      * @public
      */
-    @Prop({ default: false, type: Boolean })
+    @Prop({ default: true, type: Boolean })
     public highlightCurated!: boolean;
 
     /**
