@@ -1,5 +1,5 @@
 name: Check branch is releasable and release alpha on main branch update
-on: [pull_request]
+on: [push, pull_request]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
@@ -49,7 +49,7 @@ jobs:
         run: npm run build
       - name: Set test CLI args
         if: ${{ matrix.task == 'test:unit' }}
-        run: echo "CLI_ARGS=--changedSince ${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+        run: echo "CLI_ARGS=--changedSince ${{ github.event.before }}" >> $GITHUB_ENV
       - name: Run ${{ matrix.task }}
         run: npm run ${{ matrix.task }} ${{ env.CLI_ARGS }}
   release:
