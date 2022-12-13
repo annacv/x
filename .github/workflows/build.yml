@@ -37,7 +37,7 @@ jobs:
           path: .eslintcache
           key: eslint-${{github.sha}}
       - name: Cache Cypress
-        if: ${{ matrix.task == 'test:e2e:ci' }} || ${{ matrix.task == 'test:component' }}
+        if: ${{ matrix.task == 'test:e2e:ci' || matrix.task == 'test:component' }}
         id: cache-cypress
         uses: actions/cache@v3
         with:
