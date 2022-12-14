@@ -42,7 +42,7 @@ jobs:
         id: cache-jest
         uses: actions/cache@v3
         with:
-          path: ./tmp/jest
+          path: ./tmp
           key: jest-${{github.sha}}
           restore-keys: jest-
       - name: Cache Cypress
