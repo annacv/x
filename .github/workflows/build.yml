@@ -5,10 +5,10 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-12
     strategy:
       matrix:
-        task: [ lint, 'test:unit', 'test:component', 'test:e2e:ci' ]
+        task: [ lint, 'test:unit', 'test:unit-cypress', 'test:e2e:ci' ]
     name: ${{ matrix.task }}
     container:
       image: cypress/browsers:node16.16.0-chrome105-ff104-edge
@@ -17,43 +17,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
-      # Using lerna, it is recommended to cache the whole node_modules folder https://github.com/actions/cache/blob/main/examples.md#node---lerna
-      # but this is not the standard, normally, only the node_modules/.cache should be cached. Also, as cypress image is used, node is already
-      # preinstalled, the expected action `setup-node` is not used.
-      # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#about-caching-workflow-dependencies
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v3
+      - name: Enables cache
+        id: cache
+        uses: ./.github/actions/cache
         with:
-          path: '**/node_modules'
-          key: node-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Cache eslint
-        if: ${{ matrix.task == 'lint' }}
-        id: cache-eslint
-        uses: actions/cache@v3
-        with:
-          path: .eslintcache
-          key: eslint-${{github.sha}}
-      - name: Cache Cypress
-        if: ${{ matrix.task == 'test:e2e:ci' || matrix.task == 'test:component' }}
-        id: cache-cypress
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-cache
+          task_name: ${{ matrix.task }}
       - name: Install lerna and all packages
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-node-modules != 'true'
         run: npm ci
       - name: Build
-        if: steps.cache-node-modules.outputs.cache-hit == 'true'
+        if: steps.cache.outputs.cache-node-modules == 'true'
         run: npm run build
       - name: Run ${{ matrix.task }}
         run: npm run ${{ matrix.task }}
   release:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: macos-12
     steps:
       - name: Release alpha on non-release pushes to main branch
         if:
