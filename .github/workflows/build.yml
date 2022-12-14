@@ -15,6 +15,7 @@ jobs:
       # https://github.com/cypress-io/github-action#firefox Cypress FF image needs this user permissions to be able to install dependencies
       options: --user 1001
     steps:
+      - uses: docker-practice/actions-setup-docker@master
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -36,6 +37,7 @@ jobs:
     needs: [build]
     runs-on: macos-12
     steps:
+      - uses: docker-practice/actions-setup-docker@master
       - name: Release alpha on non-release pushes to main branch
         if:
           ${{ github.ref_name == 'main' && github.actor != 'support-empathy' &&
