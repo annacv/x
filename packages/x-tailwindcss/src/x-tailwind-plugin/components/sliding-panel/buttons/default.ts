@@ -9,6 +9,7 @@ export function slidingPanelButtonsDefault() {
     position: 'absolute',
     transition: 'all ease-out 0.2s',
     zIndex: 1,
+    opacity: 0,
 
     '&-left': {
       left: 0,
