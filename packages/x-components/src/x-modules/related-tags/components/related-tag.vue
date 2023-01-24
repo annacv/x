@@ -1,7 +1,7 @@
 <template>
   <button
     @click="emitEvents"
-    class="x-tag x-related-tag"
+    class="x-tag x-related-tag selected:x-bg-accent-50"
     data-test="related-tag"
     :class="dynamicClasses"
   >
@@ -120,8 +120,7 @@
       return {
         'x-tag--is-curated': this.shouldHighlightCurated,
         'x-related-tag--is-curated': this.shouldHighlightCurated,
-        'x-tag--is-selected': this.isSelected,
-        'x-related-tag--is-selected': this.isSelected
+        'x-selected': this.isSelected
       };
     }
   }
