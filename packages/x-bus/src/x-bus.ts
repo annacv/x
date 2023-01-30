@@ -10,7 +10,8 @@ import {
   SubjectPayload,
   EventPayload,
   XBus,
-  XPriorityQueueNodeData
+  XPriorityQueueNodeData,
+  TimeoutId
 } from './x-bus.types';
 
 /**
@@ -77,14 +78,14 @@ export class XPriorityBus<SomeEvents extends Dictionary, SomeEventMetadata exten
    *
    * @internal
    */
-  protected pendingFlushId?: number;
+  protected pendingFlushId?: TimeoutId;
 
   /**
    * A list of pending pop operations timeout identifiers.
    *
    * @internal
    */
-  protected pendingPopsIds: number[] = [];
+  protected pendingPopsIds: TimeoutId[] = [];
 
   /**
    * Creates a new instance of a {@link XPriorityBus}.
@@ -182,9 +183,9 @@ export class XPriorityBus<SomeEvents extends Dictionary, SomeEventMetadata exten
     clearTimeout(this.pendingFlushId);
     this.clearPendingPopsIds();
 
-    this.pendingFlushId = window.setTimeout(() => {
+    this.pendingFlushId = setTimeout(() => {
       for (let i = 0; i < this.queue.size(); ++i) {
-        const popTimeoutId = window.setTimeout(() => {
+        const popTimeoutId = setTimeout(() => {
           const {
             key,
             data: { eventPayload, eventMetadata, resolve }
