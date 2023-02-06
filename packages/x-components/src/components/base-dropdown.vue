@@ -203,7 +203,8 @@
       return this.items.map((item, index) => {
         return {
           'x-dropdown__item--is-selected': this.value === item,
-          'x-dropdown__item--is-highlighted': this.highlightedItemIndex === index
+          'x-dropdown__item--is-highlighted': this.highlightedItemIndex === index,
+          test: true
         };
       });
     }
