@@ -34,7 +34,9 @@ jobs:
         id: pnpm-cache
         uses: actions/cache@v3
         with:
-          path: ${{ steps.pnpm-store-directory.outputs.PATH }}
+          path: |
+            ${{ steps.pnpm-store-directory.outputs.PATH }}
+            ~/.cache/Cypress
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -45,7 +47,6 @@ jobs:
         with:
           path: |
             node_modules/.cache
-            ~/.cache/Cypress
           key: lerna-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: lerna-cache-
 
