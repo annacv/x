@@ -47,7 +47,7 @@ jobs:
         with:
           path: |
             node_modules/.cache
-          key: lerna-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: lerna-cache-${{github.sha}}
           restore-keys: lerna-cache-
 
       - name: setup eslint cache
