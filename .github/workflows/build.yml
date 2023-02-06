@@ -38,15 +38,16 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-            
-      - name: Cache node modules
-        id: cache-node-modules
+
+      - name: setup lerna cache
+        id: lerna-cache
         uses: actions/cache@v3
         with:
           path: |
-            **/node_modules
-             ~/.cache/Cypress
-          key: node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+            **/node_modules/.cache/nx
+            ~/.cache/Cypress
+          key: lerna-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: lerna-cache-
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -56,12 +57,7 @@ jobs:
           restore-keys: eslint-
 
       - name: install dependencies
-        if: steps.pnpm-cache.outputs.cache-hit != 'true'
         run: pnpm install
-
-      - name: build packages
-        if: steps.pnpm-cache.outputs.cache-hit == 'true'
-        run: pnpm run build
 
       - name: lint packages
         run: pnpm run lint
