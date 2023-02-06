@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            **/node_modules/.cache/nx
+            node_modules/.cache
             ~/.cache/Cypress
           key: lerna-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: lerna-cache-
