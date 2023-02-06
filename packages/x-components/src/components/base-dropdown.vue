@@ -204,7 +204,8 @@
         return {
           'x-dropdown__item--is-selected': this.value === item,
           'x-dropdown__item--is-highlighted': this.highlightedItemIndex === index,
-          test: true
+          test: true,
+          'x-test': true
         };
       });
     }
