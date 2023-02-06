@@ -206,7 +206,8 @@
           'x-dropdown__item--is-highlighted': this.highlightedItemIndex === index,
           test: true,
           'x-test': true,
-          'x-test-2': true
+          'x-test-2': true,
+          'x-test-3': true
         };
       });
     }
