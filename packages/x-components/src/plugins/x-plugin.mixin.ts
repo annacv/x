@@ -77,7 +77,7 @@ export function getBusAPI(
     ) => {
       const emitPromise = bus.emit(
         event,
-        payload as unknown as any,
+        payload as XEventPayload<Event>,
         createWireMetadata(component, metadata)
       );
       component.xComponent?.$emit(event, payload);
