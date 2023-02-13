@@ -1,13 +1,11 @@
 import { createLocalVue } from '@vue/test-utils';
 import { default as Vue, VueConstructor } from 'vue';
 import Vuex, { Store } from 'vuex';
-import { XPriorityBus } from '@empathyco/x-bus';
 import { createWireFromFunction } from '../../wiring/wires.factory';
 import { XComponentsAdapterDummy } from '../../__tests__/adapter.dummy';
-import { createXModule } from '../../__tests__/utils';
+import { createXModule, proxyBus } from '../../__tests__/utils';
 import { XPlugin } from '../x-plugin';
 import { XPluginOptions } from '../x-plugin.types';
-import { WireMetadata, XEventsTypes } from '../../wiring/index';
 
 const wireInstance = jest.fn();
 const usedClearedWireInstance = jest.fn();
@@ -57,7 +55,7 @@ describe('testing X Plugin emitters', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    plugin = new XPlugin(new XPriorityBus<XEventsTypes, WireMetadata>());
+    plugin = new XPlugin(proxyBus());
     XPlugin.resetInstance();
     localVue = createLocalVue();
     localVue.use(Vuex);

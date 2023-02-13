@@ -13,7 +13,15 @@ function renderGlobalXBus({ listeners = {} }: RenderGlobalXBusOptions = {}): Ren
 }
 
 describe('testing GlobalXBus component', function () {
-  it('executes a callback provided by the listeners when the event is emitted', function () {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  it('executes a callback provided by the listeners when the event is emitted', () => {
     const acceptedAQueryCallback = jest.fn(payload => payload);
     const clickedColumnPickerCallback = jest.fn(payload => payload);
     const { wrapper } = renderGlobalXBus({

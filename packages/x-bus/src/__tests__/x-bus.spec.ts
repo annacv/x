@@ -11,14 +11,6 @@ describe('x-priority-bus scenarios', () => {
     EventTest4: void;
   }
 
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -98,7 +90,6 @@ describe('x-priority-bus scenarios', () => {
       expect(queuePopSpy).not.toHaveBeenCalled();
 
       // The events are batched and emitted in the right order
-      jest.runAllTimers();
       await Promise.all([emit1, emit2, emit3, emit4]);
       expect(queuePopSpy).toHaveBeenCalledTimes(4);
       expect(emittedEvents).toEqual<(keyof TestEvents)[]>([
@@ -112,7 +103,7 @@ describe('x-priority-bus scenarios', () => {
   });
 
   describe('on', () => {
-    it('allows to create subscriptions to an event', () => {
+    it('allows to create subscriptions to an event', async () => {
       // Given a bus
       const bus = new XPriorityBus<TestEvents, Dictionary>();
 
@@ -123,21 +114,17 @@ describe('x-priority-bus scenarios', () => {
       const unsubscribeFromTestEvent2 = bus.on('TestEvent2').subscribe(testEvent2SubscriptionFn);
 
       // When that event is emitted
-      bus.emit('TestEvent1');
-      bus.emit('TestEvent2');
-      jest.runAllTimers();
+      await Promise.all([bus.emit('TestEvent1'), bus.emit('TestEvent2')]);
 
       unsubscribeFromTestEvent2.unsubscribe();
-      bus.emit('TestEvent1');
-      bus.emit('TestEvent2');
-      jest.runAllTimers();
+      await Promise.all([bus.emit('TestEvent1'), bus.emit('TestEvent2')]);
 
       // Then the bus notify its subscriptions
       expect(testEvent1SubscriptionFn).toHaveBeenCalledTimes(2);
       expect(testEvent2SubscriptionFn).toHaveBeenCalledTimes(1);
     });
 
-    it('allows to create subscriptions to an event with metadata', () => {
+    it('allows to create subscriptions to an event with metadata', async () => {
       interface EventMetadata {
         name: string;
         isCustom: boolean;
@@ -153,9 +140,10 @@ describe('x-priority-bus scenarios', () => {
       bus.on('TestEvent2', true).subscribe(testEvent2SubscriptionFn);
 
       // When that event is emitted
-      bus.emit('TestEvent1', 'string', { name: 'TestEvent1', isCustom: true });
-      bus.emit('TestEvent2', 0, { name: 'TestEvent2', isCustom: false });
-      jest.runAllTimers();
+      await Promise.all([
+        bus.emit('TestEvent1', 'string', { name: 'TestEvent1', isCustom: true }),
+        bus.emit('TestEvent2', 0, { name: 'TestEvent2', isCustom: false })
+      ]);
 
       // Then the bus notify its subscriptions
       expect(testEvent1SubscriptionFn).toHaveBeenCalledTimes(1);
@@ -183,20 +171,16 @@ describe('x-priority-bus scenarios', () => {
  *
  * @internal
  */
-async function emitMultipleEvents<SomeRecord extends Dictionary, SomeMetadata extends Dictionary>(
+function emitMultipleEvents<SomeRecord extends Dictionary, SomeMetadata extends Dictionary>(
   bus: XPriorityBus<SomeRecord, SomeMetadata>,
   eventsToEmit: Parameters<XBus<SomeRecord, SomeMetadata>['emit']>[],
   emittedEvents: (keyof SomeRecord)[] = []
 ): Promise<any[]> {
   const pushEmittedEvent: AnyFunction = ({ event }: { event: keyof SomeRecord }) =>
     emittedEvents.push(event);
-  const emittedEventsPromise = Promise.all([
-    eventsToEmit.map(([event, payload, metadata]) => {
-      bus.emit(event, payload, metadata).then(pushEmittedEvent);
-    })
-  ]);
+  const promises = eventsToEmit.map(([event, payload, metadata]) =>
+    bus.emit(event, payload, metadata).then(pushEmittedEvent)
+  );
 
-  jest.runAllTimers();
-
-  return await emittedEventsPromise;
+  return Promise.all(promises);
 }

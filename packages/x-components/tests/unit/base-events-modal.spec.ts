@@ -3,10 +3,10 @@ import Vue from 'vue';
 import BaseEventsModalClose from '../../src/components/modals/base-events-modal-close.vue';
 import BaseEventsModalOpen from '../../src/components/modals/base-events-modal-open.vue';
 import BaseEventsModal from '../../src/components/modals/base-events-modal.vue';
-import { BaseXBus } from '../../src/plugins/x-bus';
 import { XPlugin } from '../../src/plugins/x-plugin';
 import { XEvent } from '../../src/wiring/events.types';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
+import { proxyBus } from '../../src/__tests__/utils';
 
 /**
  * Mounts a {@link BaseEventsModal} component with the provided options and offers an API to easily
@@ -40,7 +40,7 @@ function mountBaseEventsModal({
     },
     {
       vue: Vue.extend({}),
-      plugins: [[new XPlugin(new BaseXBus()), { adapter: e2eAdapter }]],
+      plugins: [[new XPlugin(proxyBus()), { adapter: e2eAdapter }]],
       propsData: { bodyClickEvent, eventsToCloseModal, eventsToOpenModal }
     }
   );

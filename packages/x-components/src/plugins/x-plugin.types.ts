@@ -12,7 +12,7 @@ import {
 } from '@empathyco/x-types';
 import { DeepPartial } from '@empathyco/x-utils';
 import { Store } from 'vuex';
-import { XBus } from '@empathyco/x-bus';
+import { EmittedData, XBus } from '@empathyco/x-bus';
 import { ActionsTree } from '../store/actions.types';
 import { GettersTree } from '../store/getters.types';
 import { MutationsTree } from '../store/mutations.types';
@@ -80,13 +80,15 @@ export interface XComponentBusAPI {
   /** {@inheritDoc XBus.(on:1)} */
   on: XBus<XEventsTypes, WireMetadata>['on'];
   /** {@inheritDoc XBus.(emit:1)} */
-  emit(event: PropsWithType<XEventsTypes, void>): void;
+  emit<Event extends PropsWithType<XEventsTypes, void>>(
+    event: Event
+  ): Promise<EmittedData<XEventsTypes, Event, WireMetadata>>;
   /** {@inheritDoc XBus.(emit:2)} */
   emit<Event extends XEvent>(
     event: Event,
     payload: XEventPayload<Event>,
     metadata?: Omit<WireMetadata, 'moduleName' | 'origin' | 'location'>
-  ): void;
+  ): Promise<EmittedData<XEventsTypes, Event, WireMetadata>>;
   /* eslint-enable jsdoc/require-description-complete-sentence */
 }
 
