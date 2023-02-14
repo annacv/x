@@ -1,9 +1,8 @@
-import { createLocalVue } from '@vue/test-utils';
 import { default as Vue, VueConstructor } from 'vue';
 import Vuex, { Store } from 'vuex';
 import { createWireFromFunction } from '../../wiring/wires.factory';
 import { XComponentsAdapterDummy } from '../../__tests__/adapter.dummy';
-import { createXModule, proxyBus } from '../../__tests__/utils';
+import { createXModule, installNewXPlugin } from '../../__tests__/utils';
 import { XPlugin } from '../x-plugin';
 import { XPluginOptions } from '../x-plugin.types';
 
@@ -55,9 +54,10 @@ describe('testing X Plugin emitters', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    plugin = new XPlugin(proxyBus());
+    const [newXPlugin, newLocalVue] = installNewXPlugin();
     XPlugin.resetInstance();
-    localVue = createLocalVue();
+    plugin = newXPlugin;
+    localVue = newLocalVue;
     localVue.use(Vuex);
     store = new Store({});
   });
@@ -81,12 +81,16 @@ describe('testing X Plugin emitters', () => {
       XPlugin.registerXModule(xModule);
       localVue.use(plugin, pluginOptions);
 
+      jest.runAllTimers();
+
       expectModuleToHaveBeenReplaced();
     });
 
     it('overrides after installing plugin', () => {
       localVue.use(plugin, pluginOptions);
       XPlugin.registerXModule(xModule);
+
+      jest.runAllTimers();
 
       expectModuleToHaveBeenReplaced();
     });

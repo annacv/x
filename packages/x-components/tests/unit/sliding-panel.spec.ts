@@ -1,9 +1,8 @@
 import { mount } from 'cypress/vue2';
 import Vue from 'vue';
 import SlidingPanel from '../../src/components/sliding-panel.vue';
-import { XPlugin } from '../../src/plugins/x-plugin';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 import { loadCss } from './css.utils';
 
 /**
@@ -31,7 +30,8 @@ function renderSlidingPanel({
       </div>
   `
 }: RenderSlidingPanelOptions = {}): RenderSlidingPanelAPI {
-  XPlugin.resetInstance();
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter });
+
   loadCss(`
         .wrapper {
           display: inline-flex;
@@ -68,7 +68,7 @@ function renderSlidingPanel({
     },
     {
       vue: Vue.extend({}),
-      plugins: [[new XPlugin(proxyBus()), { adapter: e2eAdapter }]],
+      plugins: [[xPlugin]],
       propsData: {
         scrollFactor,
         resetOnContentChange,

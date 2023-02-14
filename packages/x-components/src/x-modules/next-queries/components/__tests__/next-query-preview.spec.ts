@@ -17,6 +17,14 @@ import { createNextQueryStub, getResultsStub } from '../../../../__stubs__/index
 import { resetXNextQueriesStateWith } from './utils';
 
 describe('next query preview', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   function renderNextQueryPreview({
     maxItemsToRender,
     suggestion = createNextQueryStub('milk'),
@@ -84,6 +92,7 @@ describe('next query preview', () => {
     const { eventSpy, suggestion } = renderNextQueryPreview({
       eventToSpy: 'NextQueryPreviewMountedHook'
     });
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenCalledWith(suggestion.query);
   });

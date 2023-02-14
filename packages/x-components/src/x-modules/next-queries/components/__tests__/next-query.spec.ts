@@ -8,6 +8,14 @@ import { default as NextQueryComponent } from '../next-query.vue';
 import { XComponentAPI } from '../../../../plugins/x-plugin.types';
 
 describe('testing next query item component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   function renderNextQuery({
     suggestion = createNextQueryStub('milk'),
     template = '<NextQuery :suggestion="suggestion" />'
@@ -56,6 +64,7 @@ describe('testing next query item component', () => {
     const { $x, clickNextQuery, suggestion, wrapper } = renderNextQuery();
     $x.on('UserSelectedANextQuery', true).subscribe(listener);
     await clickNextQuery();
+    jest.runAllTimers();
 
     expect(listener).toHaveBeenCalled();
     expect(listener).toHaveBeenCalledWith({
@@ -111,8 +120,10 @@ describe('testing next query item component', () => {
 interface RenderNextQueryOptions {
   /** The next query data to render. */
   suggestion?: NextQuery;
-  /** The template to render. Receives the `nextQuery` via prop, and has registered the
-   * {@link NextQueryComponent} as `NextQuery`. */
+  /**
+   * The template to render. Receives the `nextQuery` via prop, and has registered the
+   * {@link NextQueryComponent} as `NextQuery`.
+   */
   template?: string;
 }
 

@@ -2,15 +2,17 @@ import { Dictionary } from '@empathyco/x-utils';
 import { createLocalVue, shallowMount, Wrapper } from '@vue/test-utils';
 import { default as Vue, VueConstructor } from 'vue';
 import Vuex, { Store } from 'vuex';
+import { XPriorityBus } from '@empathyco/x-bus';
 import { createStoreEmitters, XStoreModule } from '../../store';
 import { createWireFromFunction, wireCommit } from '../../wiring/wires.factory';
-import { AnyWire } from '../../wiring/wiring.types';
+import { AnyWire, WireMetadata } from '../../wiring/wiring.types';
 import { createWiring } from '../../wiring/wiring.utils';
 import { AnyXModule } from '../../x-modules/x-modules.types';
 import { XComponentsAdapterDummy } from '../../__tests__/adapter.dummy';
-import { installNewXPlugin, proxyBus } from '../../__tests__/utils';
+import { installNewXPlugin } from '../../__tests__/utils';
 import { XPlugin } from '../x-plugin';
 import { PrivateXModulesOptions, XModulesOptions, XPluginOptions } from '../x-plugin.types';
+import { XEventsTypes } from '../../wiring';
 
 const wireToReplace: AnyWire = jest.fn();
 const wireToRemove: AnyWire = jest.fn();
@@ -85,7 +87,7 @@ describe('testing X Plugin', () => {
 
   describe('install XPlugin without overriding options', () => {
     it('throws an error if no options are passed', () => {
-      const plugin = new XPlugin(proxyBus());
+      const plugin = new XPlugin(new XPriorityBus<XEventsTypes, WireMetadata>());
       expect(() => localVue.use(plugin)).toThrow();
     });
 
@@ -410,8 +412,9 @@ describe('testing X Plugin', () => {
     it('store-emitters emit a changed event when the observed store state changes', async () => {
       component.vm.$x.emit('UserIsTypingAQuery', 'New York strip steak');
 
-      await localVue.nextTick(); // Needed so Vue has updated the reactive dependencies.
-      jest.runAllTimers(); // Needed for the debounce of the emitters.
+      await waitNextTick(); // Needed so Vue has updated the reactive dependencies.
+
+      jest.runAllTimers(); // needed to resolve pending emitter resolution
 
       expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledTimes(1);
       expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledWith({
@@ -433,6 +436,8 @@ describe('testing X Plugin', () => {
 
         await waitNextTick();
 
+        jest.runAllTimers(); // needed to resolve pending emitter resolution
+
         expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledTimes(1);
         expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledWith({
           eventPayload: 'Tomahawk steak',
@@ -453,8 +458,9 @@ describe('testing X Plugin', () => {
         component.vm.$x.emit('UserIsTypingAQuery', 'Prime rib');
         await localVue.nextTick(); // Needed so Vue has updated the reactive dependencies.
         component.vm.$x.emit('UserIsTypingAQuery', 'Tomahawk steak');
-
         await waitNextTick();
+
+        jest.runAllTimers(); // needed to resolve pending emitter resolution
 
         expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledTimes(1);
         expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledWith({
@@ -472,6 +478,7 @@ describe('testing X Plugin', () => {
       component.vm.$x.emit('UserIsTypingAQuery', '');
 
       await waitNextTick();
+      jest.runAllTimers(); // needed to resolve pending emitter resolution
 
       expect(searchBoxQueryChangedSubscriber).toHaveBeenCalledTimes(0);
     });

@@ -6,7 +6,7 @@ import { XPlugin } from '../../src/plugins/x-plugin';
 import { ListItem } from '../../src/utils';
 import { NextQueriesGroup } from '../../src/x-modules/next-queries/types';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 import { loadCss } from './css.utils';
 
 /**
@@ -33,6 +33,7 @@ function renderBaseGrid({
       ${customItemSlot ?? ''}
    </BaseGrid>`
 }: BaseGridRenderOptions = {}): BaseGridComponentAPI {
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter });
   const searchResponse = getSearchResponseStub();
   const defaultItems = [
     ...searchResponse.banners!,
@@ -65,7 +66,7 @@ function renderBaseGrid({
     },
     {
       vue: Vue.extend({}),
-      plugins: [[new XPlugin(proxyBus()), { adapter: e2eAdapter }]],
+      plugins: [[xPlugin]],
       propsData: {
         items: items ?? defaultItems,
         columns

@@ -1,4 +1,4 @@
-import { mount, Wrapper } from '@vue/test-utils';
+import { createLocalVue, mount, Wrapper } from '@vue/test-utils';
 import { getDataTestSelector, installNewXPlugin } from '../../../../__tests__/utils';
 import { XPlugin } from '../../../../plugins/x-plugin';
 import { scrollXModule } from '../../x-module';
@@ -13,7 +13,7 @@ async function renderWindowScroll({
   scrollableElement,
   showComponent
 }: RenderWindowScrollOptions = {}): Promise<RenderWindowScrollAPI> {
-  const [, localVue] = installNewXPlugin({ initialXModules: [scrollXModule] });
+  const [, localVue] = installNewXPlugin({ initialXModules: [scrollXModule] }, createLocalVue());
 
   const html = document.documentElement;
   html.scrollTop = 0;
@@ -89,8 +89,7 @@ describe('testing Main Scroll Component', () => {
   describe('html', () => {
     it('throttles the scroll event', async () => {
       const { wrapper, scrollHtml } = await renderWindowScroll({
-        throttleMs: 200,
-        scrollableElement: 'html'
+        throttleMs: 200
       });
 
       const listenerScrolled = jest.fn();
@@ -113,6 +112,8 @@ describe('testing Main Scroll Component', () => {
         durationMs: 1
       });
 
+      jest.advanceTimersByTime(1);
+
       expect(listenerScrolled).toHaveBeenCalledTimes(1);
       expect(listenerScrolled).toHaveBeenNthCalledWith(1, {
         eventPayload: 150,
@@ -127,8 +128,7 @@ describe('testing Main Scroll Component', () => {
     // eslint-disable-next-line max-len
     it('emits the `UserChangedScrollDirection` event when the user changes scrolling direction', async () => {
       const { wrapper, scrollHtml } = await renderWindowScroll({
-        throttleMs: 200,
-        scrollableElement: 'html'
+        throttleMs: 200
       });
 
       const listenerChangeDirection = jest.fn();
@@ -190,12 +190,8 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
-      await scrollHtml({
-        to: 0,
-        durationMs: 200
-      });
-
-      expect(listenerScrollStart).toHaveBeenCalledTimes(2);
+      jest.advanceTimersByTime(1);
+      expect(listenerScrollStart).toHaveBeenCalledTimes(1);
       expect(listenerScrollStart).toHaveBeenNthCalledWith(1, {
         eventPayload: false,
         metadata: {
@@ -204,6 +200,14 @@ describe('testing Main Scroll Component', () => {
           id: 'main-scroll'
         }
       });
+
+      await scrollHtml({
+        to: 0,
+        durationMs: 200
+      });
+
+      jest.advanceTimersByTime(1);
+      expect(listenerScrollStart).toHaveBeenCalledTimes(2);
       expect(listenerScrollStart).toHaveBeenNthCalledWith(2, {
         eventPayload: true,
         metadata: {
@@ -217,11 +221,7 @@ describe('testing Main Scroll Component', () => {
     // eslint-disable-next-line max-len
     it('emits `UserAlmostReachedScrollEnd` and`UserReachedScrollEnd` when the user scrolls to the bottom', async () => {
       const { wrapper, scrollHtml } = await renderWindowScroll({
-        throttleMs: 200,
-        scrollHeight: 800,
-        clientHeight: 200,
-        distanceToBottom: 300,
-        scrollableElement: 'html'
+        distanceToBottom: 300
       });
 
       const listenerAlmostReachedScrollEnd = jest.fn();
@@ -236,8 +236,9 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
-      expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(1);
       expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(1);
+      expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(1, {
         eventPayload: true,
         metadata: {
@@ -260,6 +261,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
       expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(2);
       expect(listenerReachedScrollEnd).toHaveBeenNthCalledWith(2, {
@@ -276,8 +278,8 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(2);
-      expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(3);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(2, {
         eventPayload: false,
         metadata: {
@@ -286,6 +288,7 @@ describe('testing Main Scroll Component', () => {
           id: 'main-scroll'
         }
       });
+      expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(3);
       expect(listenerReachedScrollEnd).toHaveBeenNthCalledWith(3, {
         eventPayload: false,
         metadata: {
@@ -300,8 +303,8 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(3);
-      expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(4);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(3, {
         eventPayload: true,
         metadata: {
@@ -310,6 +313,7 @@ describe('testing Main Scroll Component', () => {
           id: 'main-scroll'
         }
       });
+      expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(4);
       expect(listenerReachedScrollEnd).toHaveBeenNthCalledWith(4, {
         eventPayload: true,
         metadata: {
@@ -344,6 +348,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerScrolled).not.toHaveBeenCalled();
     });
 
@@ -378,6 +383,8 @@ describe('testing Main Scroll Component', () => {
 
       await setShowComponent(true);
 
+      jest.advanceTimersByTime(1);
+
       expect(listenerScrolled).toHaveBeenCalledTimes(1);
       expect(listenerScrolled).toHaveBeenNthCalledWith(1, {
         eventPayload: 600,
@@ -392,6 +399,8 @@ describe('testing Main Scroll Component', () => {
         to: 800,
         durationMs: 200
       });
+
+      jest.advanceTimersByTime(1);
 
       expect(listenerScrolled).toHaveBeenCalledTimes(2);
       expect(listenerScrolled).toHaveBeenNthCalledWith(2, {
@@ -409,6 +418,8 @@ describe('testing Main Scroll Component', () => {
         to: 500,
         durationMs: 200
       });
+
+      jest.advanceTimersByTime(1);
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(document.documentElement.removeEventListener).toHaveBeenCalledTimes(1);
@@ -442,6 +453,8 @@ describe('testing Main Scroll Component', () => {
         to: 150,
         durationMs: 1
       });
+
+      jest.advanceTimersByTime(1);
 
       expect(listenerScrolled).toHaveBeenCalledTimes(1);
       expect(listenerScrolled).toHaveBeenNthCalledWith(1, {
@@ -525,6 +538,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerScrollStart).toHaveBeenCalledTimes(2);
       expect(listenerScrollStart).toHaveBeenNthCalledWith(1, {
         eventPayload: false,
@@ -566,6 +580,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
       expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(1, {
@@ -590,6 +605,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
       expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(2);
       expect(listenerReachedScrollEnd).toHaveBeenNthCalledWith(2, {
@@ -606,6 +622,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(2);
       expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(3);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(2, {
@@ -630,6 +647,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(3);
       expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(4);
       expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(3, {
@@ -674,6 +692,7 @@ describe('testing Main Scroll Component', () => {
         durationMs: 200
       });
 
+      jest.advanceTimersByTime(1);
       expect(listenerScrolled).not.toHaveBeenCalled();
     });
 
@@ -708,6 +727,8 @@ describe('testing Main Scroll Component', () => {
 
       await setShowComponent(true);
 
+      jest.advanceTimersByTime(1);
+
       expect(listenerScrolled).toHaveBeenCalledTimes(1);
       expect(listenerScrolled).toHaveBeenNthCalledWith(1, {
         eventPayload: 600,
@@ -722,6 +743,8 @@ describe('testing Main Scroll Component', () => {
         to: 800,
         durationMs: 200
       });
+
+      jest.advanceTimersByTime(1);
 
       expect(listenerScrolled).toHaveBeenCalledTimes(2);
       expect(listenerScrolled).toHaveBeenNthCalledWith(2, {
@@ -739,6 +762,8 @@ describe('testing Main Scroll Component', () => {
         to: 500,
         durationMs: 200
       });
+
+      jest.advanceTimersByTime(1);
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(document.body.removeEventListener).toHaveBeenCalledTimes(1);

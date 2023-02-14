@@ -1,10 +1,9 @@
 import { mount } from 'cypress/vue2';
 import Vue from 'vue';
-import { XPlugin } from '../../src/plugins/x-plugin';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
 import SearchInput from '../../src/x-modules/search-box/components/search-input.vue';
 import { searchBoxXModule } from '../../src/x-modules/search-box';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 
 /**
  * Renders an {@link SearchInput} component with the provided options.
@@ -12,7 +11,7 @@ import { proxyBus } from '../../src/__tests__/utils';
  * @returns Helper methods for the rendered {@link SearchInput}.
  */
 function mountSearchInput(): MountSearchInputAPI {
-  XPlugin.resetInstance();
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter, initialXModules: [searchBoxXModule] });
   mount(
     {
       components: {
@@ -24,9 +23,7 @@ function mountSearchInput(): MountSearchInputAPI {
     },
     {
       vue: Vue.extend({}),
-      plugins: [
-        [new XPlugin(proxyBus()), { adapter: e2eAdapter, initialXModules: [searchBoxXModule] }]
-      ]
+      plugins: [[xPlugin]]
     }
   );
 

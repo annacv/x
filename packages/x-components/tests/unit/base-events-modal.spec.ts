@@ -3,10 +3,9 @@ import Vue from 'vue';
 import BaseEventsModalClose from '../../src/components/modals/base-events-modal-close.vue';
 import BaseEventsModalOpen from '../../src/components/modals/base-events-modal-open.vue';
 import BaseEventsModal from '../../src/components/modals/base-events-modal.vue';
-import { XPlugin } from '../../src/plugins/x-plugin';
 import { XEvent } from '../../src/wiring/events.types';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 
 /**
  * Mounts a {@link BaseEventsModal} component with the provided options and offers an API to easily
@@ -20,6 +19,7 @@ function mountBaseEventsModal({
   eventsToCloseModal,
   eventsToOpenModal
 }: MountBaseEventsModalOptions = {}): MountBaseEventsModalAPI {
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter });
   cy.viewport(1920, 200);
   mount(
     {
@@ -40,7 +40,7 @@ function mountBaseEventsModal({
     },
     {
       vue: Vue.extend({}),
-      plugins: [[new XPlugin(proxyBus()), { adapter: e2eAdapter }]],
+      plugins: [[xPlugin]],
       propsData: { bodyClickEvent, eventsToCloseModal, eventsToOpenModal }
     }
   );

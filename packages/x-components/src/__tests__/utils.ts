@@ -13,7 +13,7 @@ import {
   RelatedTagsResponse,
   SearchResponse
 } from '@empathyco/x-types';
-import { XBus, XPriorityBus } from '@empathyco/x-bus';
+import { XPriorityBus } from '@empathyco/x-bus';
 import { XPluginOptions } from '../plugins';
 import { XPlugin } from '../plugins/x-plugin';
 import { ActionsDictionary } from '../store/actions.types';
@@ -178,29 +178,6 @@ function mergeStates<State extends Dictionary>(
 }
 
 /**
- * Missing doc.
- *
- * @returns A bus.
- */
-export function proxyBus<
-  Events extends Dictionary = XEventsTypes,
-  Metadata extends Dictionary = WireMetadata
->(): XBus<Events, Metadata> {
-  const bus = new XPriorityBus<Events, Metadata>();
-  const proxyEmit = new Proxy<XBus<Events, Metadata>['emit']>(bus['emit'], {
-    apply(target, thisArg, args: Parameters<XBus<Events, Metadata>['emit']>) {
-      jest.useFakeTimers();
-      target.apply(thisArg, args);
-      jest.runAllTimers();
-      jest.useRealTimers();
-    }
-  });
-  bus.emit = proxyEmit;
-
-  return bus;
-}
-
-/**
  * Makes a clean install of the's the {@link XPlugin} into the passed Vue object.
  * This also resets the bus, and all the hardcoded dependencies of the XPlugin.
  *
@@ -216,7 +193,7 @@ export function installNewXPlugin(
 ): [XPlugin, typeof Vue] {
   XPlugin.resetInstance();
 
-  const xPlugin = new XPlugin(proxyBus());
+  const xPlugin = new XPlugin(new XPriorityBus<XEventsTypes, WireMetadata>());
   const installOptions: XPluginOptions = {
     adapter: XComponentsAdapterDummy,
     ...options

@@ -99,8 +99,8 @@ describe('query preview', () => {
 
   it('sends the `QueryPreviewRequestChanged` event', async () => {
     const { queryPreviewRequestChangedSpy, wrapper, updateExtraParams } = renderQueryPreview({});
+    jest.runAllTimers();
 
-    jest.advanceTimersByTime(0); // Wait for first emission.
     expect(queryPreviewRequestChangedSpy).toHaveBeenCalledTimes(1);
     expect(queryPreviewRequestChangedSpy).toHaveBeenCalledWith({
       extraParams: {},
@@ -112,7 +112,8 @@ describe('query preview', () => {
     // The timer is relaunched when the prop changes
     await wrapper.setProps({ queryFeature: 'popular_search' });
     // fast-forward until next timer should be executed
-    jest.advanceTimersToNextTimer();
+    await wrapper.vm.$nextTick();
+    jest.runAllTimers();
 
     expect(queryPreviewRequestChangedSpy).toHaveBeenNthCalledWith(2, {
       extraParams: {},
@@ -122,7 +123,8 @@ describe('query preview', () => {
     });
 
     await updateExtraParams({ store: 'Uganda' });
-    jest.advanceTimersToNextTimer();
+    await wrapper.vm.$nextTick();
+    jest.runAllTimers();
 
     expect(queryPreviewRequestChangedSpy).toHaveBeenNthCalledWith(3, {
       extraParams: { store: 'Uganda' },
@@ -138,8 +140,8 @@ describe('query preview', () => {
       query: 'shoes',
       queryFeature: 'query_suggestion'
     });
+    jest.runAllTimers();
 
-    jest.advanceTimersToNextTimer();
     expect(queryPreviewRequestChangedSpy).toHaveBeenNthCalledWith(1, {
       extraParams: {},
       origin: 'query_suggestion:predictive_layer',
@@ -236,7 +238,8 @@ describe('query preview', () => {
         query: 'bull'
       });
 
-      jest.advanceTimersByTime(0);
+      jest.runAllTimers();
+
       expect(queryPreviewRequestChangedSpy).toHaveBeenCalledTimes(1);
       expect(queryPreviewRequestChangedSpy).toHaveBeenNthCalledWith(1, {
         extraParams: {},
@@ -255,6 +258,8 @@ describe('query preview', () => {
       expect(queryPreviewRequestChangedSpy).toHaveBeenCalledTimes(0);
 
       jest.advanceTimersByTime(1); // 250ms since mounting the component, the debounce tested
+      await wrapper.vm.$nextTick();
+      jest.advanceTimersByTime(2); // resolve pending emitters
       expect(queryPreviewRequestChangedSpy).toHaveBeenCalledTimes(1);
       expect(queryPreviewRequestChangedSpy).toHaveBeenNthCalledWith(1, {
         extraParams: {},
@@ -277,6 +282,8 @@ describe('query preview', () => {
       expect(queryPreviewRequestChangedSpy).toHaveBeenCalledTimes(1);
 
       jest.advanceTimersByTime(1);
+      await wrapper.vm.$nextTick();
+      jest.advanceTimersByTime(2);
       expect(queryPreviewRequestChangedSpy).toHaveBeenCalledTimes(2);
       expect(queryPreviewRequestChangedSpy).toHaveBeenNthCalledWith(2, {
         extraParams: {},

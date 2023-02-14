@@ -53,7 +53,7 @@
     "gen:component-docs": "vue-docgen",
     "lint": "eslint . --ext .ts,.vue",
     "test:unit": "jest --silent && pnpm run test:unit-cypress",
-    "test:unit-jest": "jest --testPathIgnorePatterns src/wiring/__tests__/*.spec.ts --testPathIgnorePatterns src/wiring/__tests__/*.spec.ts",
+    "test:unit-jest": "jest",
     "test:unit-cypress": "cypress run --component",
     "test:unit-coverage": "jest --coverage",
     "test:unit-watch": "jest --watch",

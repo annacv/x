@@ -26,13 +26,23 @@ function renderHistoryQueriesSwitch({
     localVue,
     store
   });
+  jest.runAllTimers();
 
   return {
-    wrapper
+    wrapper,
+    store
   };
 }
 
 describe('testing HistoryQueriesSwitch component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderHistoryQueriesSwitch();
 
@@ -40,20 +50,31 @@ describe('testing HistoryQueriesSwitch component', () => {
     expect(getXComponentXModuleName(wrapper.vm)).toEqual('historyQueries');
   });
 
-  it('should emit proper events when toggling its state', () => {
-    const { wrapper } = renderHistoryQueriesSwitch();
+  it('should emit proper events when toggling its state', async () => {
+    const { wrapper, store } = renderHistoryQueriesSwitch();
+
+    resetXHistoryQueriesStateWith(store, {
+      isEnabled: false,
+      historyQueries: createHistoryQueries('jacket', 'shirt')
+    });
+    jest.runAllTimers();
+
     const enableListener = jest.fn();
     const disableListener = jest.fn();
 
     wrapper.vm.$x.on('UserClickedEnableHistoryQueries').subscribe(enableListener);
     wrapper.vm.$x.on('UserClickedDisableHistoryQueries').subscribe(disableListener);
 
-    wrapper.trigger('click');
+    await wrapper.trigger('click');
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(enableListener).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.$store.state.x.historyQueries.isEnabled).toBe(true);
 
-    wrapper.trigger('click');
+    await wrapper.trigger('click');
+    await wrapper.vm.$nextTick();
+    jest.runAllTimers();
 
     expect(disableListener).toHaveBeenCalledTimes(1);
   });
@@ -63,12 +84,16 @@ describe('testing HistoryQueriesSwitch component', () => {
       historyQueries: [],
       isEnabled: true
     });
+
     const listener = jest.fn();
     wrapper.vm.$x.on('UserClickedConfirmDisableHistoryQueries').subscribe(listener);
 
-    wrapper.trigger('click');
+    await wrapper.trigger('click');
+    jest.runAllTimers();
 
-    await new Promise(resolve => setTimeout(resolve));
+    await wrapper.vm.$nextTick();
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.$store.state.x.historyQueries.isEnabled).toBe(false);
@@ -91,4 +116,5 @@ interface HistoryQueriesSwitchOptions {
 interface HistoryQueriesSwitchAPI {
   /** The wrapper for HistoryQueriesSwitch component. */
   wrapper: Wrapper<Vue>;
+  store: any;
 }

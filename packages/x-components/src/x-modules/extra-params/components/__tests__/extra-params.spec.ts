@@ -3,16 +3,13 @@ import { mount, Wrapper } from '@vue/test-utils';
 import Vue from 'vue';
 import { installNewXPlugin } from '../../../../__tests__/utils';
 import { getXComponentXModuleName, isXComponent } from '../../../../components';
-import { XPlugin } from '../../../../plugins';
 import { WirePayload } from '../../../../wiring';
 import { extraParamsXModule } from '../../x-module';
 import ExtraParams from '../extra-params.vue';
 
 describe('testing extra params component', () => {
   function renderExtraParams(values: Dictionary<unknown>): RenderExtraParamsApi {
-    XPlugin.resetInstance();
-    const [, localVue] = installNewXPlugin();
-    XPlugin.registerXModule(extraParamsXModule);
+    const [, localVue] = installNewXPlugin({ initialXModules: [extraParamsXModule] });
 
     const wrapper = mount(ExtraParams, {
       propsData: {
@@ -26,6 +23,14 @@ describe('testing extra params component', () => {
     };
   }
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderExtraParams({ warehouse: 1234 });
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -35,6 +40,7 @@ describe('testing extra params component', () => {
   it('emits the ExtraParamsProvided event when the values change', async () => {
     const { wrapper } = renderExtraParams({ warehouse: 1234 });
     const extraParamsProvidedCallback = jest.fn();
+    jest.advanceTimersByTime(1); // resolve event
 
     wrapper.vm.$x.on('ExtraParamsProvided', true).subscribe(extraParamsProvidedCallback);
 
@@ -45,6 +51,7 @@ describe('testing extra params component', () => {
     expect(extraParamsProvidedCallback).toHaveBeenCalledTimes(1);
 
     await wrapper.setProps({ values: { warehouse: 5678 } });
+    jest.runAllTimers(); // resolve event
 
     expect(extraParamsProvidedCallback).toHaveBeenCalledWith<[WirePayload<Dictionary<unknown>>]>({
       eventPayload: { warehouse: 5678 },

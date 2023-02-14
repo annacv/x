@@ -68,6 +68,9 @@ describe('testing DeviceDetector component', () => {
   afterEach(() => {
     jest.runAllTimers();
   });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
 
   it('is an x-component', async () => {
     const { wrapper } = await renderDeviceDetector();
@@ -90,17 +93,19 @@ describe('testing DeviceDetector component', () => {
         tablet: 1000
       }
     });
-
+    jest.advanceTimersByTime(1); // resolve event
     expect(getDevice()).toBe('mobile');
 
     resize(601);
     // The resize should be throttled, so no change should happen yet
     expect(getDevice()).toBe('mobile');
     await waitForThrottle();
+    jest.advanceTimersByTime(1); // resolve event
     expect(getDevice()).toBe('tablet');
 
     resize(1001);
     await waitForThrottle();
+    jest.advanceTimersByTime(1); // resolve event
     expect(getDevice()).toBe('desktop');
   });
 
@@ -115,10 +120,12 @@ describe('testing DeviceDetector component', () => {
       }
     });
 
+    jest.advanceTimersByTime(1); // resolve event
     expect(getDevice()).toBe('not-standard-device');
 
     resize(1001);
     await waitForThrottle();
+    jest.advanceTimersByTime(1); // resolve event
     expect(getDevice()).toBe('not-standard-device');
   });
 });

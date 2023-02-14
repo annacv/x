@@ -11,7 +11,15 @@ describe('testing RemoveHistoryQuery component', () => {
     timestamp: 778394
   };
 
-  it('emits UserPressedRemoveHistoryQuery when it is clicked', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  it('emits UserPressedRemoveHistoryQuery when it is clicked', async () => {
     const listener = jest.fn();
 
     const removeHistoryQuery = mount(RemoveHistoryQuery, {
@@ -22,7 +30,8 @@ describe('testing RemoveHistoryQuery component', () => {
     });
     removeHistoryQuery.vm.$x.on('UserPressedRemoveHistoryQuery', true).subscribe(listener);
 
-    removeHistoryQuery.trigger('click');
+    await removeHistoryQuery.trigger('click');
+    jest.runAllTimers();
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith({

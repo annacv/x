@@ -7,7 +7,7 @@ import MainScrollItem from '../../src/x-modules/scroll/components/main-scroll-it
 import MainScroll from '../../src/x-modules/scroll/components/main-scroll.vue';
 import { scrollXModule } from '../../src/x-modules/scroll/x-module';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 import { loadCss } from './css.utils';
 
 /**
@@ -38,8 +38,8 @@ function renderMainScroll({
       </MainScroll>
   `
 }: RenderMainScrollOptions = {}): RenderMainScrollAPI {
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter, initialXModules: [scrollXModule] });
   const userScrolledToElementSpy = cy.spy();
-  XPlugin.resetInstance();
 
   document.body.dataset.test = document.documentElement.dataset.test = '';
   if (windowScrollingElement === 'body') {
@@ -95,9 +95,7 @@ function renderMainScroll({
     },
     {
       vue: Vue.extend({}),
-      plugins: [
-        [new XPlugin(proxyBus()), { adapter: e2eAdapter, initialXModules: [scrollXModule] }]
-      ]
+      plugins: [[xPlugin]]
     }
   );
 

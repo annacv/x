@@ -1,9 +1,8 @@
 import { mount } from 'cypress/vue2';
 import Vue from 'vue';
 import BaseModal from '../../src/components/modals/base-modal.vue';
-import { XPlugin } from '../../src/plugins/x-plugin';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 import { loadCss } from './css.utils';
 
 /**
@@ -26,7 +25,8 @@ function renderBaseModal({
       </div>
   `
 }: RenderBaseModalOptions = {}): RenderBaseModalAPI {
-  XPlugin.resetInstance();
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter });
+
   cy.viewport('macbook-16');
   loadCss(`
         body {
@@ -56,7 +56,7 @@ function renderBaseModal({
     },
     {
       vue: Vue.extend({}),
-      plugins: [[new XPlugin(proxyBus()), { adapter: e2eAdapter }]],
+      plugins: [[xPlugin]],
       propsData: {
         referenceSelector
       }

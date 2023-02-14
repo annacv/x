@@ -12,6 +12,14 @@ describe('testing ClearHistoryQueries component', () => {
   const store = new Store<DeepPartial<RootXStoreState>>({});
   installNewXPlugin({ store }, localVue);
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     resetXHistoryQueriesStateWith(store);
   });
@@ -37,6 +45,7 @@ describe('testing ClearHistoryQueries component', () => {
   it('emits UserPressedClearHistoryQueries when clicked', async () => {
     const listener = jest.fn();
     const clearHistoryQueries = mount(ClearHistoryQueries, { localVue, store });
+
     clearHistoryQueries.vm.$x.on('UserPressedClearHistoryQueries', true).subscribe(listener);
     resetXHistoryQueriesStateWith(store, {
       historyQueries: [
@@ -49,7 +58,8 @@ describe('testing ClearHistoryQueries component', () => {
     });
 
     await localVue.nextTick();
-    clearHistoryQueries.trigger('click');
+    await clearHistoryQueries.trigger('click');
+    jest.runAllTimers();
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith({

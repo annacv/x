@@ -45,6 +45,14 @@ describe('testing RenderlessExtraParam component', () => {
     };
   }
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderRenderlessExtraParams({});
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -64,7 +72,7 @@ describe('testing RenderlessExtraParam component', () => {
     expect(extraParamsProvidedCallback).toHaveBeenCalledTimes(0);
   });
 
-  it('emits UserChangedExtraParams event when the update method is called', () => {
+  it('emits UserChangedExtraParams event when the update method is called', async () => {
     const userChangedExtraParamsCallback = jest.fn();
     const { wrapper } = renderRenderlessExtraParams({
       template: `
@@ -74,10 +82,13 @@ describe('testing RenderlessExtraParam component', () => {
     });
 
     wrapper.vm.$x.on('UserChangedExtraParams', true).subscribe(userChangedExtraParamsCallback);
+    jest.runAllTimers(); // resolve event
 
     expect(userChangedExtraParamsCallback).toHaveBeenCalledTimes(0);
 
     wrapper.find(getDataTestSelector('custom-slot')).element.click();
+    await wrapper.vm.$nextTick();
+    jest.runAllTimers(); // resolve event
 
     expect(userChangedExtraParamsCallback).toHaveBeenCalledWith<[WirePayload<Dictionary<unknown>>]>(
       {

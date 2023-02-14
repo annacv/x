@@ -2,9 +2,8 @@ import { mount } from 'cypress/vue2';
 // eslint-disable-next-line max-len
 import BaseColumnPickerDropdown from '../../src/components/column-picker/base-column-picker-dropdown.vue';
 import BaseColumnPickerList from '../../src/components/column-picker/base-column-picker-list.vue';
-import { XPlugin } from '../../src/plugins/x-plugin';
 import { e2eAdapter } from '../../src/adapter/e2e-adapter';
-import { proxyBus } from '../../src/__tests__/utils';
+import { installNewXPlugin } from '../../src/__tests__/utils';
 
 /**
  * Mounts a {@link BaseColumnPickerList} and {@link BaseColumnPickerDropdown} component with the
@@ -17,6 +16,8 @@ function mountBaseColumnPickerComponents({
   columns = [2, 4, 6],
   selectedColumns = 4
 }: BaseColumnPickerRenderOptions = {}): BaseColumnPickerComponentAPI {
+  const [xPlugin] = installNewXPlugin({ adapter: e2eAdapter });
+
   cy.viewport(1920, 200);
   mount(
     {
@@ -50,7 +51,7 @@ function mountBaseColumnPickerComponents({
       }
     },
     {
-      plugins: [[new XPlugin(proxyBus()), { adapter: e2eAdapter }]],
+      plugins: [[xPlugin]],
       propsData: { columns, selectedColumns }
     }
   );

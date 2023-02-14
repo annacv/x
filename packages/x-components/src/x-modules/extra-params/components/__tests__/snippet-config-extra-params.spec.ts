@@ -3,7 +3,6 @@ import { mount, Wrapper } from '@vue/test-utils';
 import Vue from 'vue';
 import { installNewXPlugin } from '../../../../__tests__/utils';
 import { getXComponentXModuleName, isXComponent } from '../../../../components';
-import { XPlugin } from '../../../../plugins';
 import { WirePayload } from '../../../../wiring';
 import { extraParamsXModule } from '../../x-module';
 import SnippetConfigExtraParams from '../snippet-config-extra-params.vue';
@@ -14,9 +13,7 @@ describe('testing snippet config extra params component', () => {
     values,
     excludedExtraParams
   }: RenderSnippetConfigExtraParamsOptions = {}): RenderSnippetConfigExtraParamsApi {
-    XPlugin.resetInstance();
-    const [, localVue] = installNewXPlugin();
-    XPlugin.registerXModule(extraParamsXModule);
+    const [, localVue] = installNewXPlugin({ initialXModules: [extraParamsXModule] });
     const snippetConfig = Vue.observable({ warehouse: 1234, callbacks: {} });
 
     const wrapper = mount(
@@ -54,6 +51,14 @@ describe('testing snippet config extra params component', () => {
     };
   }
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderSnippetConfigExtraParams();
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -66,6 +71,7 @@ describe('testing snippet config extra params component', () => {
     const extraParamsProvidedCallback = jest.fn();
 
     wrapper.vm.$x.on('ExtraParamsProvided', true).subscribe(extraParamsProvidedCallback);
+    jest.runAllTimers(); // resolve event
 
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       1,
@@ -75,6 +81,7 @@ describe('testing snippet config extra params component', () => {
     );
 
     await setSnippetConfig({ warehouse: 45678 });
+    jest.runAllTimers(); // resolve event
 
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       2,
@@ -87,11 +94,11 @@ describe('testing snippet config extra params component', () => {
   // eslint-disable-next-line max-len
   it('emits the ExtraParamsProvided event with the values from the snippet config and the extra params', () => {
     const { wrapper } = renderSnippetConfigExtraParams({ values: { scope: 'mobile' } });
-
     const extraParamsProvidedCallback = jest.fn();
 
     wrapper.vm.$x.on('ExtraParamsProvided', true).subscribe(extraParamsProvidedCallback);
 
+    jest.runAllTimers(); // resolve event
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       1,
       expect.objectContaining({
@@ -107,6 +114,8 @@ describe('testing snippet config extra params component', () => {
 
     wrapper.vm.$x.on('ExtraParamsProvided', true).subscribe(extraParamsProvidedCallback);
 
+    jest.runAllTimers(); // resolve event
+
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       1,
       expect.objectContaining({
@@ -115,10 +124,12 @@ describe('testing snippet config extra params component', () => {
     );
 
     await setSnippetConfig({ uiLang: 'es' });
+    jest.runAllTimers(); // resolve event
 
     expect(extraParamsProvidedCallback).toHaveBeenCalledTimes(1);
 
     await setSnippetConfig({ warehouse: 45678 });
+    jest.runAllTimers(); // resolve event
 
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       2,
@@ -134,6 +145,7 @@ describe('testing snippet config extra params component', () => {
 
     wrapper.vm.$x.on('ExtraParamsProvided', true).subscribe(extraParamsProvidedCallback);
 
+    jest.runAllTimers(); // resolve event
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       1,
       expect.not.objectContaining({
@@ -154,6 +166,7 @@ describe('testing snippet config extra params component', () => {
     const extraParamsProvidedCallback = jest.fn();
     wrapper.vm.$x.on('ExtraParamsProvided', true).subscribe(extraParamsProvidedCallback);
 
+    jest.runAllTimers(); // resolve event
     expect(extraParamsProvidedCallback).toHaveBeenNthCalledWith<[WirePayload<Dictionary<unknown>>]>(
       1,
       expect.objectContaining({
