@@ -10,14 +10,6 @@ import { initialUrlState } from '../../store/initial-state';
 import { urlXModule } from '../../x-module';
 import UrlHandler from '../url-handler.vue';
 
-// Mock the window.performance.getEntriesByType function used to get the location. The location is
-// tested in an E2E test as navigation between different pages is needed.
-Object.defineProperty(window, 'performance', {
-  value: {
-    getEntriesByType: jest.fn().mockReturnValue([])
-  }
-});
-
 /**
  * Renders the {@link UrlHandler} component, exposing a basic API for testing.
  *
@@ -67,8 +59,20 @@ function renderUrlHandler({
 }
 
 describe('testing UrlHandler component', () => {
-  beforeAll(jest.useFakeTimers);
+  beforeAll(() => {
+    jest.useFakeTimers();
+    // Mock the window.performance.getEntriesByType function used to get the location.
+    // The location is tested in an E2E test as navigation between different pages is needed.
+    Object.defineProperty(window, 'performance', {
+      writable: true,
+      value: {
+        ...window.performance,
+        getEntriesByType: jest.fn().mockReturnValue([])
+      }
+    });
+  });
   afterAll(jest.useRealTimers);
+
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderUrlHandler();
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -79,6 +83,7 @@ describe('testing UrlHandler component', () => {
     const { on } = renderUrlHandler({
       urlParams: 'query=lego&page=2&tag=marvel&sort=price desc&scroll=333&filter=brand:lego'
     });
+    jest.runAllTimers();
     const eventSpy = jest.fn();
     on('ParamsLoadedFromUrl', true).subscribe(eventSpy);
 
@@ -110,6 +115,8 @@ describe('testing UrlHandler component', () => {
         '&sort=price asc&scroll=444&filter=brand:playmobil'
     );
 
+    jest.runAllTimers();
+
     expect(eventSpy).toHaveBeenNthCalledWith(2, {
       query: 'lego',
       page: 2,
@@ -136,6 +143,8 @@ describe('testing UrlHandler component', () => {
     popstateUrlWithParams('query=lego&page=2');
     popstateUrlWithParams('query=playmobil&page=3');
 
+    jest.runAllTimers();
+
     expect(eventSpy).toHaveBeenNthCalledWith(2, {
       ...initialUrlState,
       query: 'lego',
@@ -157,6 +166,8 @@ describe('testing UrlHandler component', () => {
     const eventSpy = jest.fn();
     on('ParamsLoadedFromUrl').subscribe(eventSpy);
 
+    jest.runAllTimers();
+
     expect(eventSpy).toHaveBeenNthCalledWith(1, {
       ...initialUrlState,
       query: 'lego',
@@ -172,6 +183,7 @@ describe('testing UrlHandler component', () => {
     });
     const eventSpy = jest.fn();
     on('ParamsLoadedFromUrl').subscribe(eventSpy);
+    jest.runAllTimers();
 
     expect(eventSpy).toHaveBeenNthCalledWith(1, {
       ...initialUrlState,
@@ -191,8 +203,9 @@ describe('testing UrlHandler component', () => {
       store: '111',
       warehouse: '222'
     });
-    const urlSearchParams = getCurrentUrlParams();
+    jest.runAllTimers();
 
+    const urlSearchParams = getCurrentUrlParams();
     expect(urlSearchParams.get('query')).toEqual('lego');
     expect(urlSearchParams.get('page')).toEqual('2');
     expect(urlSearchParams.get('store')).toEqual('111');
@@ -210,8 +223,9 @@ describe('testing UrlHandler component', () => {
       store: '111',
       warehouse: '222'
     });
-    const urlSearchParams = getCurrentUrlParams();
+    jest.runAllTimers();
 
+    const urlSearchParams = getCurrentUrlParams();
     expect(urlSearchParams.get('query')).toEqual('lego');
     expect(urlSearchParams.get('page')).toEqual('2');
     expect(urlSearchParams.get('store')).toEqual('111');
@@ -226,12 +240,16 @@ describe('testing UrlHandler component', () => {
       ...initialUrlState,
       query: 'lego city'
     });
+    jest.runAllTimers();
+
     expect(window.location.href).toContain('query=lego%20city');
 
     emit('ReplaceableUrlStateChanged', {
       ...initialUrlState,
       query: 'lego farm'
     });
+    jest.runAllTimers();
+
     expect(window.location.href).toContain('query=lego%20farm');
   });
 
@@ -245,6 +263,7 @@ describe('testing UrlHandler component', () => {
       scroll: 'frisona-steak-1.5kg',
       query: ''
     });
+    jest.runAllTimers();
 
     expect(new URL(window.location.href).searchParams.toString()).toEqual('');
   });
