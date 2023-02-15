@@ -20,7 +20,7 @@ describe('testing namespaced wires operators', () => {
       jest.advanceTimersByTime(999);
       expect(callback).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(1);
+      jest.advanceTimersByTime(2);
       expect(callback).toHaveBeenCalledTimes(1);
       expect(callback).toHaveBeenCalledWith('3');
     });
@@ -60,6 +60,7 @@ describe('testing namespaced wires operators', () => {
       expect(callback).not.toHaveBeenCalled();
 
       bus.emit('UserClickedAResult', createResultStub('Random result'));
+      jest.advanceTimersByTime(1);
       expect(callback).toHaveBeenCalledTimes(1);
       expect(callback).toHaveBeenCalledWith('3');
 
@@ -122,6 +123,8 @@ describe('testing namespaced wires operators', () => {
       );
 
       emitWireEvent('1', '2', '3');
+
+      jest.runAllTimers();
       expect(callback).toHaveBeenCalledTimes(1);
       expect(callback).toHaveBeenCalledWith('1');
 

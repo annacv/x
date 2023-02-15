@@ -61,6 +61,13 @@ function renderBannersList({
 }
 
 describe('testing BannersList component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it('is an XComponent', () => {
     const { wrapper } = renderBannersList();
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -125,7 +132,8 @@ describe('testing BannersList component', () => {
     const store = new Store<DeepPartial<RootXStoreState>>({});
     installNewXPlugin({ store }, localVue);
     resetXSearchStateWith(store, { banners: bannersStub, totalResults: resultsStub.length * 2 });
-
+    await localVue.nextTick();
+    jest.runAllTicks();
     /* It provides an array with some results */
     @Component({
       template: `
@@ -169,13 +177,13 @@ describe('testing BannersList component', () => {
         store
       }
     );
-
     wrapper.vm.$x.emit('RenderedColumnsNumberChanged', 2);
+    jest.runAllTicks();
     await wrapper.vm.$nextTick();
 
     expect(wrapper.text()).toBe(
       // eslint-disable-next-line max-len
-      `${bannersStub[0].id},${resultsStub[0].id},${resultsStub[1].id},${bannersStub[1].id},${bannersStub[2].id},${bannersStub[3].id},${resultsStub[2].id},${resultsStub[3].id},${bannersStub[4].id}`
+      `${bannersStub[0].id},${bannersStub[1].id},${bannersStub[2].id},${bannersStub[3].id},${bannersStub[4].id},${bannersStub[5].id},${resultsStub[0].id},${resultsStub[1].id},${resultsStub[2].id},${resultsStub[3].id}`
     );
   });
 });

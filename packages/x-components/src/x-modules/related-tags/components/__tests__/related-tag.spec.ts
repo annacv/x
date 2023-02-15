@@ -14,6 +14,13 @@ import { relatedTagsXModule } from '../../x-module';
 import RelatedTagComponent from '../related-tag.vue';
 
 describe('testing related tag item component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
   function renderRelatedTag({
     relatedTag = getRelatedTagsStub()[0],
     template = '<RelatedTag :relatedTag="relatedTag" />'
@@ -92,6 +99,8 @@ describe('testing related tag item component', () => {
     expect(relatedTagCrossWrapper.exists()).toEqual(false);
 
     await clickRelatedTag();
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
     relatedTagCrossWrapper = wrapper.find(getDataTestSelector('related-tag-cross'));
     expect(relatedTagCrossWrapper.exists()).toEqual(true);
 
@@ -116,6 +125,8 @@ describe('testing related tag item component', () => {
     $x.on('UserDeselectedARelatedTag', true).subscribe(deselectRelatedTagMock);
 
     await clickRelatedTag();
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(userPickedARelatedTagMock).toHaveBeenCalledTimes(1);
     expect(userPickedARelatedTagMock).toHaveBeenNthCalledWith(1, {
@@ -129,6 +140,8 @@ describe('testing related tag item component', () => {
     });
 
     await clickRelatedTag();
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(userPickedARelatedTagMock).toHaveBeenCalledTimes(2);
     expect(userPickedARelatedTagMock).toHaveBeenNthCalledWith(2, {

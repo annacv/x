@@ -70,6 +70,7 @@ describe('testing Redirection component', () => {
   const { location } = window;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     delete window.location;
@@ -78,7 +79,7 @@ describe('testing Redirection component', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
+    jest.useRealTimers();
     window.location = location;
   });
 
@@ -115,12 +116,14 @@ describe('testing Redirection component', () => {
   });
 
   //eslint-disable-next-line max-len
-  it('redirects and emits the `UserClickedARedirection` event in manual mode when the user click the button', () => {
+  it('redirects and emits the `UserClickedARedirection` event in manual mode when the user click the button', async () => {
     const { wrapper, acceptRedirection } = renderRedirection({ mode: 'manual' });
     const onUserClickedARedirection = jest.fn();
 
     wrapper.vm.$x.on('UserClickedARedirection', true).subscribe(onUserClickedARedirection);
     acceptRedirection();
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(onUserClickedARedirection).toHaveBeenCalledTimes(1);
     expect(onUserClickedARedirection).toHaveBeenCalledWith<[WirePayload<RedirectionModel>]>({
@@ -152,8 +155,7 @@ describe('testing Redirection component', () => {
     const onUserClickedARedirection = jest.fn();
 
     wrapper.vm.$x.on('UserClickedARedirection', true).subscribe(onUserClickedARedirection);
-    // The delay 0 runs so fast the we need to force the test to simulate a wait.
-    jest.advanceTimersByTime(1);
+    jest.runAllTimers();
 
     expect(onUserClickedARedirection).toHaveBeenCalledTimes(1);
     expect(onUserClickedARedirection).toHaveBeenCalledWith<[WirePayload<RedirectionModel>]>({
@@ -174,7 +176,7 @@ describe('testing Redirection component', () => {
     wrapper.vm.$x.on('UserClickedARedirection', true).subscribe(onUserClickedARedirection);
     wrapper.vm.$x.on('UserClickedAbortARedirection', true).subscribe(onUserAbortedARedirection);
     abortRedirection();
-    jest.runAllTicks();
+    jest.runAllTimers();
 
     expect(onUserClickedARedirection).not.toHaveBeenCalled();
     expect(onUserAbortedARedirection).toHaveBeenCalledTimes(1);

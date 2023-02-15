@@ -67,6 +67,8 @@ function renderUrlHandler({
 }
 
 describe('testing UrlHandler component', () => {
+  beforeAll(jest.useFakeTimers);
+  afterAll(jest.useRealTimers);
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderUrlHandler();
     expect(isXComponent(wrapper.vm)).toEqual(true);

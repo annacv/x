@@ -20,6 +20,14 @@ describe('testing search button component', () => {
     slots: { default: 'Search!' }
   });
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -78,6 +86,8 @@ describe('testing search button component', () => {
     await localVue.nextTick();
 
     await searchButtonWrapper.trigger('click');
+    await localVue.nextTick();
+    jest.runAllTimers();
 
     expect(mockedObserver).toHaveBeenCalledTimes(2);
     expect(mockedObserver).toHaveBeenNthCalledWith(1, mockedObserverCalledWith);

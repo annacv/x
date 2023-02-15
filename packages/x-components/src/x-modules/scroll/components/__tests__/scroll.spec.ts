@@ -98,7 +98,7 @@ describe('testing Scroll Component', () => {
       to: 150,
       durationMs: 1
     });
-
+    jest.advanceTimersByTime(1);
     expect(listenerScrolled).toHaveBeenCalledTimes(1);
     expect(listenerScrolled).toHaveBeenNthCalledWith(1, {
       eventPayload: 150,
@@ -179,7 +179,7 @@ describe('testing Scroll Component', () => {
       to: 0,
       durationMs: 200
     });
-
+    jest.advanceTimersByTime(1);
     expect(listenerScrollStart).toHaveBeenCalledTimes(2);
     expect(listenerScrollStart).toHaveBeenNthCalledWith(1, {
       eventPayload: false,
@@ -219,6 +219,7 @@ describe('testing Scroll Component', () => {
       durationMs: 200
     });
 
+    jest.advanceTimersByTime(1);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(1, {
       eventPayload: true,
@@ -242,7 +243,7 @@ describe('testing Scroll Component', () => {
       to: 600,
       durationMs: 200
     });
-
+    jest.advanceTimersByTime(2);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(1);
     expect(listenerReachedScrollEnd).toHaveBeenCalledTimes(2);
     expect(listenerReachedScrollEnd).toHaveBeenNthCalledWith(2, {
@@ -258,7 +259,7 @@ describe('testing Scroll Component', () => {
       to: 0,
       durationMs: 200
     });
-
+    jest.advanceTimersByTime(1);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(2);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(2, {
       eventPayload: false,
@@ -282,7 +283,7 @@ describe('testing Scroll Component', () => {
       to: 600,
       durationMs: 200
     });
-
+    jest.advanceTimersByTime(1);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenCalledTimes(3);
     expect(listenerAlmostReachedScrollEnd).toHaveBeenNthCalledWith(3, {
       eventPayload: true,

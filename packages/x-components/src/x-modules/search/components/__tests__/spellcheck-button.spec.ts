@@ -41,6 +41,14 @@ function renderSpellcheckButton({
 }
 
 describe('testing SpellcheckButton component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('does not render any content when there is not spellcheckedQuery', () => {
     const { wrapper } = renderSpellcheckButton();
     expect(wrapper.find(getDataTestSelector('set-spellcheck')).element).not.toBeDefined();
@@ -82,6 +90,7 @@ describe('testing SpellcheckButton component', () => {
     $x.on('UserAcceptedSpellcheckQuery', true).subscribe(userAcceptSpellcheck);
 
     click();
+    jest.runAllTimers();
 
     expect(userAcceptedAQuery).toHaveBeenNthCalledWith(1, {
       eventPayload: spellcheckedQuery,

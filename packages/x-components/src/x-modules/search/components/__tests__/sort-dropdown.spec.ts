@@ -89,6 +89,13 @@ function renderSortDropdown({
 }
 
 describe('testing SortDropdown component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
   it('is an XComponent', () => {
     const { wrapper } = renderSortDropdown();
     expect(isXComponent(wrapper.vm)).toBe(true);
@@ -113,6 +120,8 @@ describe('testing SortDropdown component', () => {
     await clickToggleButton();
     await clickNthItem(2);
     await clickToggleButton();
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(getToggleButton().text()).toEqual('offer');
     expect(getSelectedItem().text()).toEqual('offer');
@@ -126,7 +135,7 @@ describe('testing SortDropdown component', () => {
   // eslint-disable-next-line max-len
   it('returns a default empty string at first', () => {
     const { onSelectedSortProvided } = renderSortDropdown();
-
+    jest.runAllTimers();
     expect(onSelectedSortProvided).toHaveBeenCalledTimes(1);
     expect(onSelectedSortProvided).toHaveBeenCalledWith<[WirePayload<Sort>]>({
       eventPayload: '',

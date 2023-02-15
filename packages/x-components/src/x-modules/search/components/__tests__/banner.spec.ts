@@ -34,6 +34,13 @@ function renderBanner({
 }
 
 describe('testing Banner component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it('is an XComponent', () => {
     const { wrapper } = renderBanner();
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -63,19 +70,28 @@ describe('testing Banner component', () => {
   });
 
   // eslint-disable-next-line max-len
-  it('emits UserClickedABanner when the user clicks in the left, middle or right button on the component', () => {
+  it('emits UserClickedABanner when the user clicks in the left, middle or right button on the component', async () => {
     const listener = jest.fn();
     const banner = createBannerStub('banner');
     const { wrapper } = renderBanner({ banner });
     wrapper.vm.$x.on('UserClickedABanner').subscribe(listener);
 
     wrapper.trigger('click');
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
+
     expect(listener).toHaveBeenNthCalledWith(1, banner);
 
     wrapper.trigger('click', { button: 1 });
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
+
     expect(listener).toHaveBeenNthCalledWith(2, banner);
 
     wrapper.trigger('click', { button: 2 });
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
+
     expect(listener).toHaveBeenNthCalledWith(3, banner);
 
     expect(listener).toHaveBeenCalledTimes(3);

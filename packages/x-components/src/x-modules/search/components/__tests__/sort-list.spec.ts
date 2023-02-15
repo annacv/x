@@ -80,6 +80,13 @@ function renderSortList({
 }
 
 describe('testing SortList component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
   it('is an XComponent', () => {
     const { wrapper } = renderSortList();
     expect(isXComponent(wrapper.vm)).toBe(true);
@@ -91,12 +98,15 @@ describe('testing SortList component', () => {
   });
 
   it('allows selecting one of the options of the list', async () => {
-    const { getButton, clickNthItem, getSelectedItem, onUserClickedASort } = renderSortList({
-      items: ['price', 'relevance', 'offer']
-    });
+    const { wrapper, getButton, clickNthItem, getSelectedItem, onUserClickedASort } =
+      renderSortList({
+        items: ['price', 'relevance', 'offer']
+      });
 
     const buttonWrapper = getButton(2);
     await clickNthItem(2);
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
 
     expect(getSelectedItem().text()).toEqual('offer');
     expect(onUserClickedASort).toHaveBeenCalledTimes(1);
@@ -114,7 +124,7 @@ describe('testing SortList component', () => {
     const { onSelectedSortProvided } = renderSortList({
       items: ['price desc', 'price asc', '']
     });
-
+    jest.runAllTimers();
     expect(onSelectedSortProvided).toHaveBeenCalledTimes(1);
     expect(onSelectedSortProvided).toHaveBeenCalledWith<[WirePayload<Sort>]>({
       eventPayload: '',

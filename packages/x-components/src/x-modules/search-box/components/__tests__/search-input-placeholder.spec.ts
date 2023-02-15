@@ -120,6 +120,8 @@ describe('testing search input placeholder component', () => {
 
     expect(getPlaceholderText()).toEqual(messages[0]);
     await hoverInput('in');
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
     for (const message of messages.slice(1)) {
       expect(getPlaceholderText()).toEqual(message);
       jest.runOnlyPendingTimers();
@@ -130,21 +132,29 @@ describe('testing search input placeholder component', () => {
     await wrapper.vm.$nextTick();
     expect(getPlaceholderText()).toEqual(messages[1]);
     await hoverInput('out');
+    jest.runOnlyPendingTimers();
+    await wrapper.vm.$nextTick();
     expect(getPlaceholderText()).toEqual(messages[0]);
-    jest.advanceTimersByTime(2000);
+    jest.runOnlyPendingTimers();
     expect(getPlaceholderText()).toEqual(messages[0]);
     await hoverInput('in');
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
     expect(getPlaceholderText()).toEqual(messages[1]);
   });
 
   it('is not visible when there is a query set', async () => {
-    const { messages, getPlaceholderText, isPlaceholderVisible, emit } = await mountTestComponent();
+    const { wrapper, messages, getPlaceholderText, isPlaceholderVisible, emit } =
+      await mountTestComponent();
 
     expect(getPlaceholderText()).toEqual(messages[0]);
     await emit('UserAcceptedAQuery', 'testing');
+    jest.advanceTimersByTime(1);
+    await wrapper.vm.$nextTick();
     expect(isPlaceholderVisible()).toEqual(false);
-    jest.advanceTimersByTime(2000);
     await emit('UserAcceptedAQuery', '');
+    jest.advanceTimersByTime(2);
+    await wrapper.vm.$nextTick();
     expect(getPlaceholderText()).toEqual(messages[1]);
   });
 
@@ -152,12 +162,17 @@ describe('testing search input placeholder component', () => {
     const { wrapper, isPlaceholderVisible } = await mountTestComponent({
       autofocus: true
     });
-
+    jest.advanceTimersByTime(2);
+    await wrapper.vm.$nextTick();
     expect(isPlaceholderVisible()).toEqual(false);
     const inputWrapper = wrapper.findComponent(SearchInput);
     await inputWrapper.trigger('blur');
+    jest.advanceTimersByTime(1);
+    await wrapper.vm.$nextTick();
     expect(isPlaceholderVisible()).toEqual(true);
     await inputWrapper.trigger('focus');
+    jest.advanceTimersByTime(1);
+    await wrapper.vm.$nextTick();
     expect(isPlaceholderVisible()).toEqual(false);
   });
 });

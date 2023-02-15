@@ -73,6 +73,14 @@ function renderResultsList({
 }
 
 describe('testing Results list component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('is an XComponent', () => {
     const { wrapper } = renderResultsList();
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -136,7 +144,7 @@ describe('testing Results list component', () => {
     wrapper.vm.$x.on('UserReachedResultsListEnd').subscribe(listener);
 
     (wrapper.vm as Vue & InfiniteScroll).onInfiniteScrollEnd();
-
+    jest.runAllTimers();
     expect(listener).toHaveBeenCalledTimes(1);
   });
 

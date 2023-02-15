@@ -67,6 +67,12 @@ const defaultTaggingConfig: Partial<TaggingConfig> = {
   clickedResultStorageKey: 'url'
 };
 describe('testing Tagging component', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
   it('is an XComponent which has an XModule', () => {
     const { wrapper } = renderTagging();
     expect(isXComponent(wrapper.vm)).toEqual(true);
@@ -78,17 +84,16 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('ConsentProvided').subscribe(eventSpy);
-
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, true);
   });
 
-  it('emits TaggingConfigProvided when the session duration is set using the prop', () => {
+  it('emits TaggingConfigProvided when the session duration is set using the prop', async () => {
     const { on } = renderTagging({ sessionTTLMs: 100 });
     const eventSpy = jest.fn();
-
+    jest.runAllTimers();
     on('TaggingConfigProvided').subscribe(eventSpy);
-
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, { ...defaultTaggingConfig, sessionTTLMs: 100 });
   });
@@ -98,7 +103,7 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('TaggingConfigProvided').subscribe(eventSpy);
-
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, {
       ...defaultTaggingConfig,
@@ -111,7 +116,7 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('TaggingConfigProvided').subscribe(eventSpy);
-
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, {
       ...defaultTaggingConfig,
@@ -124,7 +129,7 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('TaggingConfigProvided').subscribe(eventSpy);
-
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, {
       ...defaultTaggingConfig,
@@ -143,7 +148,7 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('TaggingConfigProvided').subscribe(eventSpy);
-
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, {
       clickedResultStorageKey: 'id',
@@ -165,6 +170,7 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('ConsentProvided').subscribe(eventSpy);
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, false);
   });
@@ -181,11 +187,13 @@ describe('testing Tagging component', () => {
     const eventSpy = jest.fn();
 
     on('ConsentProvided').subscribe(eventSpy);
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(1);
     expect(eventSpy).toHaveBeenNthCalledWith(1, false);
 
     snippet.consent = true;
     await wrapper.vm.$nextTick();
+    jest.runAllTimers();
     expect(eventSpy).toHaveBeenCalledTimes(2);
     expect(eventSpy).toHaveBeenNthCalledWith(2, true);
   });

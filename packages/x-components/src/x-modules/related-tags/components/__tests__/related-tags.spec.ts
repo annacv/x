@@ -14,6 +14,13 @@ import RelatedTags from '../related-tags.vue';
 import { resetStoreRelatedTagsState } from './utils';
 
 describe('testing related tags component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
   function renderRelatedTags({
     relatedTags = getRelatedTagsStub(),
     template = '<RelatedTags />'
@@ -111,6 +118,8 @@ describe('testing related tags component', () => {
     relatedTagsWrappers.wrappers.forEach(expectToHaveOverriddenContent);
 
     await clickNthRelatedTag(relatedTags.length - 1);
+    jest.runAllTimers();
+    await wrapper.vm.$nextTick();
     relatedTagsWrappers = getRelatedTagItems();
 
     const [selectedWrapper, ...unSelectedWrappers] = relatedTagsWrappers.wrappers;

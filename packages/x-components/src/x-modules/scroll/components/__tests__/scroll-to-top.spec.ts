@@ -40,10 +40,20 @@ function renderScrollToTop({
 }
 
 describe('testing Scroll To Top component', () => {
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
   it('renders the content in the slot', async () => {
     const { scrollToTopWrapper, emitXEvent } = renderScrollToTop();
     await emitXEvent('UserAlmostReachedScrollEnd', true);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await emitXEvent('UserChangedScrollDirection', 'DOWN');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     expect(scrollToTopWrapper.text()).toEqual('Top');
   });
 
@@ -51,7 +61,11 @@ describe('testing Scroll To Top component', () => {
     const { scrollToTopWrapper, emitXEvent } = renderScrollToTop();
     expect(scrollToTopWrapper.html()).toBe('');
     await emitXEvent('UserAlmostReachedScrollEnd', true);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await emitXEvent('UserChangedScrollDirection', 'DOWN');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     expect(scrollToTopWrapper.html()).not.toBe('');
   });
 
@@ -60,7 +74,11 @@ describe('testing Scroll To Top component', () => {
     expect(scrollToTopWrapper.html()).toBe('');
 
     await emitXEvent('UserScrolled', 250);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await emitXEvent('UserChangedScrollDirection', 'UP');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
 
     expect(scrollToTopWrapper.html()).not.toBe('');
   });
@@ -71,8 +89,14 @@ describe('testing Scroll To Top component', () => {
     scrollToTopWrapper.vm.$x.on('UserClickedScrollToTop').subscribe(listener);
 
     await emitXEvent('UserAlmostReachedScrollEnd', true);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await emitXEvent('UserChangedScrollDirection', 'DOWN');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await click();
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith('scrollId');
@@ -83,10 +107,16 @@ describe('testing Scroll To Top component', () => {
     const { scrollToTopWrapper, emitXEvent } = renderScrollToTop();
 
     await emitXEvent('UserChangedScrollDirection', 'DOWN');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await emitXEvent('UserAlmostReachedScrollEnd', true);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     expect(scrollToTopWrapper.html()).not.toBe('');
 
     await emitXEvent('UserChangedScrollDirection', 'UP');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     expect(scrollToTopWrapper.html()).toBe('');
   });
 
@@ -94,10 +124,16 @@ describe('testing Scroll To Top component', () => {
     const { scrollToTopWrapper, emitXEvent } = renderScrollToTop({ thresholdPx: 1000 });
 
     await emitXEvent('UserScrolled', 1100);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     await emitXEvent('UserChangedScrollDirection', 'UP');
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     expect(scrollToTopWrapper.html()).not.toBe('');
 
     await emitXEvent('UserScrolled', 900);
+    jest.runAllTimers();
+    await scrollToTopWrapper.vm.$nextTick();
     expect(scrollToTopWrapper.html()).toBe('');
   });
 });

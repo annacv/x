@@ -38,6 +38,14 @@ function renderPartialQueryButton({
 }
 
 describe('testing PartialQueryButton component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('is an XComponent', () => {
     const { partialQueryButtonWrapper } = renderPartialQueryButton();
     expect(isXComponent(partialQueryButtonWrapper.vm)).toEqual(true);
@@ -86,6 +94,7 @@ describe('testing PartialQueryButton component', () => {
     $x.on('UserClickedPartialQuery', true).subscribe(UserClickedPartialQuery);
 
     click();
+    jest.runAllTimers();
 
     expect(userAcceptedAQuery).toHaveBeenNthCalledWith(1, {
       eventPayload: query,

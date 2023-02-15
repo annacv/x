@@ -37,13 +37,20 @@ function renderBaseEventsModalOpen({
 }
 
 describe('testing Open Button component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
   it('emits UserClickedOpenX by default when clicked', async () => {
     const { wrapper, click } = renderBaseEventsModalOpen();
     const listener = jest.fn();
     wrapper.vm.$x.on('UserClickedOpenEventsModal').subscribe(listener);
 
     await click();
-
+    jest.runAllTimers();
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
@@ -55,6 +62,7 @@ describe('testing Open Button component', () => {
     wrapper.vm.$x.on('UserClickedAFilter').subscribe(listener);
 
     await click();
+    jest.runAllTimers();
 
     expect(listener).toHaveBeenCalledTimes(1);
   });
