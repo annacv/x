@@ -573,7 +573,7 @@
       }
     };
 
-    protected queriesToPreview = ['sunglasses', 'handbag', 'earrings', 'jeans', 't-shirt'];
+    protected queriesToPreview = ['top', 'handbag', 'earrings', 'jeans', 't-shirt'];
 
     toggleE2EAdapter(): void {
       adapterConfig.e2e = !adapterConfig.e2e;
