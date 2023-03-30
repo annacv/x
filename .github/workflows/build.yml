@@ -36,7 +36,7 @@ jobs:
         with:
           path: |
             ${{ steps.pnpm-store-directory.outputs.PATH }}
-            ${{ env.CYPRESS_CACHE_FOLDER }}
+            $CYPRESS_CACHE_FOLDER
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -54,7 +54,7 @@ jobs:
           ls -l /root/.cache/Cypress
           echo ""
           echo "cypress cache folder"
-          echo ${{ env.CYPRESS_CACHE_FOLDER }}
+          echo $CYPRESS_CACHE_FOLDER
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -91,7 +91,7 @@ jobs:
           ls -l /root/.cache/Cypress
           echo ""
           echo "cypress cache folder"
-          echo ${{ env.CYPRESS_CACHE_FOLDER }}
+          echo $CYPRESS_CACHE_FOLDER
 
       - name: test packages
         run: pnpm run test
