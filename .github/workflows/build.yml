@@ -41,6 +41,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: debug cypress
+        working-directory: ./packages/x-components
+        run: |
+          npx cypress cache path
+          npx cypress cache list
+          npx cypress verify
+          echo "pnpm store folder"
+          echo ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
+          echo ""
+          echo "cypress cache folder"
+          echo ls -l ~/.cache/Cypress
+
       - name: setup eslint cache
         uses: actions/cache@v3
         with:
@@ -68,7 +80,12 @@ jobs:
         run: |
           npx cypress cache path
           npx cypress cache list
-          npx cypress install
+          npx cypress verify
+          echo "pnpm store folder"
+          echo ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
+          echo ""
+          echo "cypress cache folder"
+          echo ls -l ~/.cache/Cypress
 
       - name: test packages
         run: pnpm run test
