@@ -45,8 +45,6 @@ jobs:
         working-directory: ./packages/x-components
         continue-on-error: true
         run: |
-          npx cypress cache path
-          npx cypress cache list
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
@@ -82,8 +80,6 @@ jobs:
         working-directory: ./packages/x-components
         continue-on-error: true
         run: |
-          npx cypress cache path
-          npx cypress cache list
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
