@@ -63,6 +63,13 @@ jobs:
       - name: lint packages
         run: pnpm run lint
 
+      - name: debug cypress
+        working-directory: ./packages/x-components
+        run: |
+          npx cypress cache path
+          npx cypress cache list
+          npx cypress install
+
       - name: test packages
         run: pnpm run test
 
