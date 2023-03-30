@@ -53,9 +53,8 @@ jobs:
           echo "cypress cache root folder"
           ls -l /root/.cache/Cypress
           echo ""
-          echo "cypress cache home folder"
-          ls -l ~/.cache/Cypress
-          npx cypress verify
+          echo "CYPRESS_CACHE_FOLDER"
+          echo $CYPRESS_CACHE_FOLDER
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -91,9 +90,8 @@ jobs:
           echo "cypress cache root folder"
           ls -l /root/.cache/Cypress
           echo ""
-          echo "cypress cache home folder"
-          ls -l ~/.cache/Cypress
-          npx cypress verify
+          echo "CYPRESS_CACHE_FOLDER"
+          echo $CYPRESS_CACHE_FOLDER
 
       - name: test packages
         run: pnpm run test
