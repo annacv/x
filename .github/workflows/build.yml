@@ -45,14 +45,20 @@ jobs:
         working-directory: ./packages/x-components
         continue-on-error: true
         run: |
+          echo "cypress cache folder"
+          echo $CYPRESS_CACHE_FOLDER
+          echo ""
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
+          echo "cypress cache path"
+          pnpm cypress cache path
+          echo ""
+          echo "cypress cache list"
+          pnpm cypress cache list
+          echo ""
           echo "cypress cache root folder"
           ls -l /root/.cache/Cypress
-          echo ""
-          echo "cypress cache folder"
-          echo $CYPRESS_CACHE_FOLDER
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -80,14 +86,20 @@ jobs:
         working-directory: ./packages/x-components
         continue-on-error: true
         run: |
+          echo "cypress cache folder"
+          echo $CYPRESS_CACHE_FOLDER
+          echo ""
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
+          echo "cypress cache path"
+          pnpm cypress cache path
+          echo ""
+          echo "cypress cache list"
+          pnpm cypress cache list
+          echo ""
           echo "cypress cache root folder"
           ls -l /root/.cache/Cypress
-          echo ""
-          echo "cypress cache folder"
-          echo $CYPRESS_CACHE_FOLDER
 
       - name: test packages
         run: pnpm run test
