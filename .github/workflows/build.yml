@@ -43,13 +43,17 @@ jobs:
 
       - name: debug cypress
         working-directory: ./packages/x-components
+        continue-on-error: true
         run: |
           npx cypress cache path
           npx cypress cache list
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
-          echo "cypress cache folder"
+          echo "cypress cache root folder"
+          ls -l /root/.cache/Cypress
+          echo ""
+          echo "cypress cache home folder"
           ls -l ~/.cache/Cypress
           npx cypress verify
 
@@ -77,13 +81,17 @@ jobs:
 
       - name: debug cypress
         working-directory: ./packages/x-components
+        continue-on-error: true
         run: |
           npx cypress cache path
           npx cypress cache list
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
-          echo "cypress cache folder"
+          echo "cypress cache root folder"
+          ls -l /root/.cache/Cypress
+          echo ""
+          echo "cypress cache home folder"
           ls -l ~/.cache/Cypress
           npx cypress verify
 
