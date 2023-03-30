@@ -46,12 +46,12 @@ jobs:
         run: |
           npx cypress cache path
           npx cypress cache list
-          npx cypress verify
           echo "pnpm store folder"
           echo ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
           echo "cypress cache folder"
           echo ls -l ~/.cache/Cypress
+          npx cypress verify
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -80,12 +80,12 @@ jobs:
         run: |
           npx cypress cache path
           npx cypress cache list
-          npx cypress verify
           echo "pnpm store folder"
           echo ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
           echo "cypress cache folder"
           echo ls -l ~/.cache/Cypress
+          npx cypress verify
 
       - name: test packages
         run: pnpm run test
