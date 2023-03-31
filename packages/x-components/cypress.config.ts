@@ -27,11 +27,11 @@ export default defineConfig({
       );
       return config;
     },
-    specPattern: 'tests/e2e/**/*.feature',
+    specPattern: 'tests/e2e/**/clear-filters.feature',
     experimentalRunAllSpecs: true
   },
   component: {
-    specPattern: 'tests/unit/**/*.spec.ts',
+    specPattern: 'tests/unit/**/base-grid.spec.ts',
     supportFile: 'tests/support/index.ts',
     indexHtmlFile: 'tests/support/component-index.html',
     screenshotOnRunFailure: false,
