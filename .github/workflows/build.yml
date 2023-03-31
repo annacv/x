@@ -3,8 +3,6 @@ on: [push, pull_request]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
-env:
-  CYPRESS_CACHE_FOLDER: ~/.cache/Cypress
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,7 +44,7 @@ jobs:
         id: cypress-cache
         uses: actions/cache@v3
         with:
-          path: /github/home/.cache/Cypress
+          path: /root/.cache/Cypress
           key: ${{ runner.os }}-cypress-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: debug cypress
@@ -66,7 +64,7 @@ jobs:
           pnpm cypress cache list
           echo ""
           echo "cypress cache local folder"
-          ls -l ~/.cache/Cypress
+          ls -l /root/.cache/Cypress
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -107,7 +105,7 @@ jobs:
           pnpm cypress cache list
           echo ""
           echo "cypress cache local folder"
-          ls -l ~/.cache/Cypress
+          ls -l /root/.cache/Cypress
 
       - name: test packages
         run: pnpm run test
