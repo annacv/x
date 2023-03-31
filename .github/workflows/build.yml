@@ -38,10 +38,16 @@ jobs:
         with:
           path: |
             ${{ steps.pnpm-store-directory.outputs.PATH }}
-            $CYPRESS_CACHE_FOLDER
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+
+      - name: setup cypress cache
+        id: cypress-cache
+        uses: actions/cache@v3
+        with:
+          path: $CYPRESS_CACHE_FOLDER
+          key: ${{ runner.os }}-cypress-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: debug cypress
         working-directory: ./packages/x-components
