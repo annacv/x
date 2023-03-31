@@ -36,16 +36,10 @@ jobs:
         with:
           path: |
             ${{ steps.pnpm-store-directory.outputs.PATH }}
+            /root/.cache/Cypress
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-
-      - name: setup cypress cache
-        id: cypress-cache
-        uses: actions/cache@v3
-        with:
-          path: /root/.cache/Cypress
-          key: ${{ runner.os }}-cypress-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: debug cypress
         working-directory: ./packages/x-components
@@ -57,14 +51,14 @@ jobs:
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
+          echo "cypress cache local folder"
+          ls -l /root/.cache/Cypress
+          echo ""
           echo "cypress cache path"
           pnpm cypress cache path
           echo ""
           echo "cypress cache list"
           pnpm cypress cache list
-          echo ""
-          echo "cypress cache local folder"
-          ls -l /root/.cache/Cypress
 
       - name: setup eslint cache
         uses: actions/cache@v3
@@ -98,14 +92,14 @@ jobs:
           echo "pnpm store folder"
           ls -l ${{ steps.pnpm-store-directory.outputs.PATH }}
           echo ""
+          echo "cypress cache local folder"
+          ls -l /root/.cache/Cypress
+          echo ""
           echo "cypress cache path"
           pnpm cypress cache path
           echo ""
           echo "cypress cache list"
           pnpm cypress cache list
-          echo ""
-          echo "cypress cache local folder"
-          ls -l /root/.cache/Cypress
 
       - name: test packages
         run: pnpm run test
