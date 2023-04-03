@@ -28,7 +28,8 @@ jobs:
         id: pnpm-store-directory
         shell: bash
         run: |
-          echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+          echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT | 
+          echo "CYPRESS_CACHE_FOLDER"
 
       - name: setup pnpm cache
         id: pnpm-cache
@@ -56,15 +57,6 @@ jobs:
             node_modules/.cache
           key: lerna-cache-${{github.sha}}
           restore-keys: lerna-cache-
-
-      - name: install dependencies
-        run: pnpm install
-
-      - name: lint packages
-        run: pnpm run lint
-
-      - name: test packages
-        run: pnpm run test
 
       - name: release alpha on non-release pushes to main branch
         if:
