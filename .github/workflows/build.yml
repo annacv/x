@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT | 
-          echo $CYPRESS_CACHE_FOLDER
+          echo "CYPRESS_CACHE_FOLDER=$($CYPRESS_CACHE_FOLDER)" >> $GITHUB_OUTPUT
 
       - name: setup pnpm cache
         id: pnpm-cache
@@ -37,7 +37,7 @@ jobs:
         with:
           path: |
             ${{ steps.pnpm-store-directory.outputs.PATH }}
-            /root/.cache/Cypress
+            ${{ steps.pnpm-store-directory.outputs.CYPRESS_CACHE_FOLDER }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
