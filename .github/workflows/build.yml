@@ -20,7 +20,9 @@ jobs:
 
       - name: setup ENV variables
         id: setup-env-vars
-        run: echo "CYPRESS_CACHE_FOLDER=$CYPRESS_CACHE_FOLDER" >> $GITHUB_OUTPUT
+        run: |
+          echo "CYPRESS_CACHE_FOLDER=$CYPRESS_CACHE_FOLDER" >> $GITHUB_OUTPUT
+          echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       # Install pnpm because it is not included in our container image
       - name: install pnpm
@@ -28,17 +30,12 @@ jobs:
         with:
           version: 7
 
-      - name: save pnpm store directory
-        id: pnpm-store-directory
-        shell: bash
-        run: echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
       - name: setup pnpm cache
         id: pnpm-cache
         uses: actions/cache@v3
         with:
           path: |
-            ${{ steps.pnpm-store-directory.outputs.PATH }}
+            ${{ steps.setup-env-vars.outputs.PATH }}
             ${{ steps.setup-env-vars.outputs.CYPRESS_CACHE_FOLDER }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
