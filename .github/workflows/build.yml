@@ -9,7 +9,8 @@ jobs:
     container:
       image: cypress/browsers:node-16.18.1-chrome-110.0.5481.96-1-ff-109.0-edge-110.0.1587.41-1
       # https://github.com/cypress-io/github-action#firefox Cypress FF image needs this user permissions to be able to install dependencies
-      options: --user 1001
+      options: --user 100
+      run: echo "CYPRESS_CACHE_FOLDER=$CYPRESS_CACHE_FOLDER" >> $GITHUB_OUTPUT
 
     steps:
       - name: checkout repository
@@ -27,9 +28,7 @@ jobs:
       - name: save pnpm store directory
         id: pnpm-store-directory
         shell: bash
-        run: |
-          echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT | 
-          echo "CYPRESS_CACHE_FOLDER=$CYPRESS_CACHE_FOLDER" >> $GITHUB_OUTPUT
+        run: echo "PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: setup pnpm cache
         id: pnpm-cache
@@ -37,7 +36,7 @@ jobs:
         with:
           path: |
             ${{ steps.pnpm-store-directory.outputs.PATH }}
-            ${{ steps.pnpm-store-directory.outputs.CYPRESS_CACHE_FOLDER }}
+            ${{ container.outputs.CYPRESS_CACHE_FOLDER }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
