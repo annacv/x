@@ -17,6 +17,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: setup ENV variables
+        id: setup-env-vars
         run: echo "CYPRESS_CACHE_FOLDER=$CYPRESS_CACHE_FOLDER" >> $GITHUB_OUTPUT
 
       # Install pnpm because it is not included in our container image
@@ -36,7 +39,7 @@ jobs:
         with:
           path: |
             ${{ steps.pnpm-store-directory.outputs.PATH }}
-            ${{ container.outputs.CYPRESS_CACHE_FOLDER }}
+            ${{ steps.setup-env-vars.outputs.CYPRESS_CACHE_FOLDER }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
