@@ -21,6 +21,8 @@ jobs:
       # Install pnpm because it is not included in our container image
       - name: install pnpm
         uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: setup ENV variables
         id: setup-env-vars
