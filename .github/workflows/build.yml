@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node-16.18.1-chrome-110.0.5481.96-1-ff-109.0-edge-110.0.1587.41-1
+      image: cypress/browsers:node-18.14.1-chrome-111.0.5563.146-1-ff-111.0.1-edge-111.0.1661.54-1
       # https://github.com/cypress-io/github-action#firefox Cypress FF image needs this user permissions to be able to install dependencies
       options: --user 1001
 
@@ -21,8 +21,6 @@ jobs:
       # Install pnpm because it is not included in our container image
       - name: install pnpm
         uses: pnpm/action-setup@v2
-        with:
-          version: 7
 
       - name: setup ENV variables
         id: setup-env-vars
