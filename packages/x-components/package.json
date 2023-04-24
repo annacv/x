@@ -59,7 +59,7 @@
     "test:e2e": "vue-cli-service test:e2e --e2e --browser chrome",
     "test:e2e:firefox": "vue-cli-service test:e2e --e2e --browser firefox",
     "test:e2e:ci": "vue-cli-service test:e2e --headless --browser chrome",
-    "test": "pnpm run test:unit && pnpm run test:e2e:ci",
+    "test": "pnpm run test:unit",
     "cypress:open": "cypress open --e2e --browser chrome",
     "cypress:open:firefox": "cypress open --e2e --browser firefox",
     "cypress:open:component": "cypress open --component --browser chrome",
